@@ -126,6 +126,26 @@ body {
   position: relative;
   flex-shrink: 0;
 }
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+.help-icon:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
 .search-wrap input {
   padding-left: 36px !important;
   width: 260px;
@@ -283,6 +303,16 @@ body {
   color: var(--text);
   border-color: var(--text-muted);
 }
+.btn-purple {
+  background: var(--purple);
+  color: #fff;
+  border: 1.5px solid var(--purple);
+}
+.btn-purple:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  box-shadow: 0 2px 8px rgba(139,92,246,0.25);
+}
 .btn-ghost {
   background: none;
   color: var(--text-muted);
@@ -347,6 +377,15 @@ body {
 .section-header .count-pending:hover {
   background: #fde68a;
   color: #b45309;
+}
+.section-header .count-releasing {
+  background: #ede9fe;
+  color: #7c3aed;
+  border-color: #8b5cf6;
+}
+.section-header .count-releasing:hover {
+  background: #ddd6fe;
+  color: #6d28d9;
 }
 .section-header .count-released {
   background: #d1fae5;
@@ -493,6 +532,7 @@ input.inline-input {
   font-weight: 600;
   margin: 0;
   letter-spacing: .01em;
+  white-space: nowrap;
   transition: all var(--transition-fast);
   cursor: default;
 }
@@ -509,6 +549,11 @@ input.inline-input {
   background: var(--warning-bg);
   color: var(--warning);
   border: 1px solid rgba(245,158,11,0.2);
+}
+.status-releasing {
+  background: var(--purple-bg);
+  color: var(--purple);
+  border: 1px solid rgba(139,92,246,0.2);
 }
 .status-released {
   background: var(--success-bg);
@@ -748,6 +793,12 @@ input.inline-input {
   flex: 1;
   min-width: 100px;
 }
+.branch-lookup-btn {
+  flex-shrink: 0;
+  padding: 2px 4px;
+  font-size: 13px;
+  line-height: 1;
+}
 /* 自定义下拉框样式 */
 input[data-role="projectName"],
 input[data-role="syncProjectName"] {
@@ -835,6 +886,12 @@ input[data-role="syncProjectName"] {
   border-color: var(--accent);
   transform: translateY(-1px);
 }
+.project-mgr .tag-item .path-tag {
+  font-size: 12px;
+  margin-left: 4px;
+  cursor: help;
+  opacity: 0.7;
+}
 .project-mgr .tag-item .edit-btn,
 .project-mgr .tag-item .del {
   cursor: pointer;
@@ -898,7 +955,6 @@ input[data-role="syncProjectName"] {
   user-select: none;
   font-weight: 650;
   font-size: 13px;
-}
   color: var(--text);
   padding: 10px 0;
   border-radius: var(--radius-sm);
@@ -1054,6 +1110,161 @@ input[data-role="syncProjectName"] {
   min-width: 120px;
 }
 
+/* ===== Branch sync progress bar ===== */
+.branch-progress {
+  max-width: 1400px;
+  margin: 0 auto var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+.branch-progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+.branch-progress-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.branch-progress-text {
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+.branch-progress-track {
+  height: 4px;
+  background: var(--border-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.branch-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* ===== Branch modal ===== */
+.branch-overlay {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9998;
+  align-items: center;
+  justify-content: center;
+}
+.branch-modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.branch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+}
+.branch-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.branch-header .btn-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.branch-header .btn-close:hover {
+  color: var(--text);
+}
+.branch-content {
+  padding: var(--spacing-md) var(--spacing-lg);
+  overflow-y: auto;
+  flex: 1;
+}
+.branch-loading {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--spacing-lg);
+}
+.branch-project {
+  margin-bottom: var(--spacing-md);
+}
+.branch-project-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--spacing-xs);
+}
+.branch-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: var(--spacing-xs);
+}
+.branch-list {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: var(--spacing-xs);
+}
+.branch-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.branch-item:hover {
+  background: var(--accent-bg);
+}
+.branch-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.branch-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: var(--spacing-sm);
+}
+.branch-author {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: var(--spacing-sm);
+}
+.branch-error {
+  font-size: 12px;
+  color: var(--danger);
+  padding: var(--spacing-xs);
+}
+.branch-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: var(--spacing-xs);
+}
+.branch-footer {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* ===== Empty state ===== */
 .empty-state {
   text-align: center;
@@ -1163,26 +1374,38 @@ input[data-role="syncProjectName"] {
       <div class="reminder-title">数据备份提醒</div>
       <div class="reminder-text">今日首次打开，请导出保存数据以防浏览器缓存清理后丢失。</div>
       <div class="reminder-btns">
-        <button class="btn btn-success" onclick="exportAndDismiss()">导出保存</button>
-        <button class="btn btn-outline" onclick="dismissReminder()">暂不保存</button>
+        <button class="btn btn-success" onclick="exportAndDismiss()" title="导出数据备份到本地文件">导出保存</button>
+        <button class="btn btn-outline" onclick="dismissReminder()" title="跳过本次备份提醒">暂不保存</button>
       </div>
     </div>
   </div>
 
   <!-- Header -->
   <div class="page-header">
-    <h1 class="page-title">需求发版管理<span class="sub" id="totalCount"></span></h1>
+    <h1 class="page-title">需求发版管理<a href="./使用说明.html" target="_blank" class="help-icon" title="打开使用说明">?</a><span class="sub" id="totalCount"></span></h1>
     <div class="header-actions">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input id="searchInput" placeholder="搜索需求名称、链接ID或分支名..." oninput="onSearch()" />
-        <button class="search-clear" id="searchClear" onclick="clearSearch()">&times;</button>
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" title="清除搜索">&times;</button>
       </div>
-      <button class="btn btn-success btn-sm" onclick="exportToFile()">导出</button>
+      <button class="btn btn-success btn-sm" onclick="exportToFile()" title="导出数据备份到本地 JSON 文件">导出</button>
       <label class="btn btn-outline btn-sm" style="cursor:pointer">
         导入 <input type="file" accept=".json" style="display:none" onchange="importFromFile(event)" />
       </label>
-      <button class="btn btn-primary" onclick="startAdding()">+ 新增需求</button>
+      <button class="btn btn-warning btn-sm" onclick="fetchAllBranches()" title="从 Git 仓库同步最新分支数据">获取分支</button>
+      <button class="btn btn-primary" onclick="startAdding()" title="新增一条发版需求">+ 新增需求</button>
+    </div>
+  </div>
+
+  <!-- Branch sync progress bar -->
+  <div class="branch-progress" id="branchProgress" style="display:none">
+    <div class="branch-progress-info">
+      <span class="branch-progress-label">同步分支数据</span>
+      <span class="branch-progress-text" id="branchProgressText">0/0</span>
+    </div>
+    <div class="branch-progress-track">
+      <div class="branch-progress-bar" id="branchProgressBar"></div>
     </div>
   </div>
 
@@ -1201,7 +1424,15 @@ input[data-role="syncProjectName"] {
             onkeydown="if(event.key==='Enter')addProjectName()" />
           <input id="pmNewMr" placeholder="MR 地址（可选）" style="width:260px"
             onkeydown="if(event.key==='Enter')addProjectName()" />
-          <button class="btn btn-primary btn-sm" onclick="addProjectName()">添加</button>
+          <input id="pmNewPath" placeholder="本地路径（可选）" style="width:200px"
+            onkeydown="if(event.key==='Enter')addProjectName()" />
+          <button class="btn btn-primary btn-sm" onclick="addProjectName()" title="将项目添加到项目列表">添加</button>
+        </div>
+        <div class="add-row" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
+          <span style="font-size:12px;color:var(--text-muted)">项目公用上线分支名：</span>
+          <input id="pmLaunchBranch" placeholder="如 master_launched" style="width:160px"
+            value="" onkeydown="if(event.key==='Enter')saveLaunchBranchName()" />
+          <button class="btn btn-purple btn-sm" onclick="saveLaunchBranchName()" title="保存所有项目的公用上线目标分支名">保存上线分支</button>
         </div>
       </div>
     </div>
@@ -1216,7 +1447,6 @@ input[data-role="syncProjectName"] {
         <span class="count count-pending" id="pendingCount"></span>
       </div>
       <span style="flex:1"></span>
-      <button class="btn btn-ghost btn-sm" onclick="releaseAll()">全部标记已发版</button>
     </div>
     <div class="collapse-body" id="pendingBody">
       <div class="card card-body-flush" style="margin-top:12px">
@@ -1224,18 +1454,52 @@ input[data-role="syncProjectName"] {
           <table>
             <thead>
               <tr>
-                <th style="width:140px">需求名称</th>
-                <th style="width:80px">状态</th>
-                <th style="width:120px">需求链接</th>
+                <th style="width:120px">需求名称</th>
+                <th style="width:70px">状态</th>
+                <th style="width:100px">需求链接</th>
                 <th style="width:320px">涉及项目及分支名</th>
-                <th style="width:210px">一同发版分支</th>
-                <th style="width:130px">操作</th>
+                <th style="width:180px">一同发版分支</th>
+                <th style="width:120px">操作</th>
               </tr>
             </thead>
             <tbody id="pendingTbody"></tbody>
           </table>
         </div>
         <div class="empty-state" id="pendingEmpty">暂无待发版需求</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Releasing section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="collapse-header" onclick="toggleReleasing()">
+        <span class="arrow" id="releasingArrow">▶</span>
+        <h2>发版中</h2>
+        <span class="count count-releasing" id="releasingCount"></span>
+        <button class="btn btn-ghost btn-sm" id="releaseAllDoneBtn" onclick="releaseAllToDone()" style="display:none;margin-left:8px" title="将发版中所有需求标记为已发版">全部发版</button>
+      </div>
+      <span style="flex:1"></span>
+      <span id="releasingProjectSummary" style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px"></span>
+    </div>
+    <div class="collapse-body" id="releasingBody">
+      <div class="card card-body-flush" style="margin-top:12px">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:120px">需求名称</th>
+                <th style="width:70px">状态</th>
+                <th style="width:100px">需求链接</th>
+                <th style="width:320px">涉及项目及分支名</th>
+                <th style="width:180px">一同发版分支</th>
+                <th style="width:120px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="releasingTbody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="releasingEmpty">暂无发版中需求</div>
       </div>
     </div>
   </div>
@@ -1255,13 +1519,13 @@ input[data-role="syncProjectName"] {
           <table>
             <thead>
               <tr>
-                <th style="width:140px">需求名称</th>
-                <th style="width:80px">状态</th>
-                <th style="width:120px">需求链接</th>
+                <th style="width:120px">需求名称</th>
+                <th style="width:70px">状态</th>
+                <th style="width:100px">需求链接</th>
                 <th style="width:320px">涉及项目及分支名</th>
-                <th style="width:210px">一同发版分支</th>
-                <th style="width:150px">发版时间</th>
-                <th style="width:130px">操作</th>
+                <th style="width:180px">一同发版分支</th>
+                <th style="width:120px">发版时间</th>
+                <th style="width:110px">操作</th>
               </tr>
             </thead>
             <tbody id="releasedTbody"></tbody>
@@ -1280,8 +1544,22 @@ input[data-role="syncProjectName"] {
     <div class="confirm-title" id="confirmTitle">确定删除该需求吗？</div>
     <div class="confirm-msg" id="confirmMsg"></div>
     <div class="confirm-btns">
-      <button class="btn btn-outline btn-sm" onclick="closeConfirm()">取消</button>
-      <button class="btn btn-danger btn-sm" id="confirmOkBtn">确定删除</button>
+      <button class="btn btn-outline btn-sm" onclick="closeConfirm()" title="取消删除">取消</button>
+      <button class="btn btn-danger btn-sm" id="confirmOkBtn" title="确认删除该需求">确定删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Launch branch dialog (when releasing without global launch branch) -->
+<div class="dialog-overlay" id="launchBranchOverlay">
+  <div class="confirm-box" style="max-width:520px">
+    <div class="confirm-icon">🚀</div>
+    <div class="confirm-title">请填写各项目的上线目标分支</div>
+    <div class="confirm-msg" id="launchBranchMsg"></div>
+    <div id="launchBranchProjectList" style="max-height:260px;overflow-y:auto;margin-bottom:12px"></div>
+    <div class="confirm-btns">
+      <button class="btn btn-outline btn-sm" onclick="closeLaunchBranchPrompt()" title="取消发版">取消</button>
+      <button class="btn btn-purple btn-sm" onclick="confirmLaunchBranch()" title="确认目标分支并发起发版">确认发版</button>
     </div>
   </div>
 </div>
@@ -1294,14 +1572,41 @@ let addingItems = []
 let addingCounter = 0
 let editingIds = {}
 let searchQuery = ''
+let launchBranch = ''  // 全项目上线目标分支名
+let branchesCache = {}  // { projectName: { branches: [...], timestamp: ... } }
+
+function saveLaunchBranch() {
+  localStorage.setItem('todo_launch_branch', launchBranch)
+}
+function loadLaunchBranch() {
+  launchBranch = localStorage.getItem('todo_launch_branch') || ''
+}
+
+function saveBranchCache() {
+  // 保存前清除 origin/ 开头的分支
+  for (const key of Object.keys(branchesCache)) {
+    if (branchesCache[key].branches) {
+      branchesCache[key].branches = branchesCache[key].branches.filter(b => b.branch && b.branch !== 'origin' && !b.branch.startsWith('origin/'))
+    }
+  }
+  localStorage.setItem('todo_branch_cache', JSON.stringify(branchesCache))
+}
+
+function loadBranchCache() {
+  try {
+    branchesCache = JSON.parse(localStorage.getItem('todo_branch_cache')) || {}
+  } catch (e) { branchesCache = {} }
+}
 
 const JSON_FILENAME = 'toDo.json'
 
-function getFullData() { return { projectNames, items } }
+function getFullData() { return { projectNames, items, branchesCache, launchBranch } }
 
 function setFullData(data) {
   if (data && Array.isArray(data.projectNames)) projectNames = data.projectNames
   if (data && Array.isArray(data.items)) items = data.items
+  if (data && data.branchesCache && typeof data.branchesCache === 'object') branchesCache = data.branchesCache
+  if (data && typeof data.launchBranch === 'string') launchBranch = data.launchBranch
 }
 
 function saveToLocalStorage() {
@@ -1344,6 +1649,10 @@ function importFromFile(e) {
       const data = JSON.parse(reader.result)
       setFullData(data)
       saveToLocalStorage()
+      saveBranchCache()
+      saveLaunchBranch()
+      document.getElementById('pmLaunchBranch').value = launchBranch
+      editingIds = {}; addingItems = []; addingCounter = 0
       updateProjectDatalist()
       renderProjectMgr()
       render()
@@ -1360,10 +1669,14 @@ async function init() {
   if (!loaded) {
     try { projectNames = JSON.parse(localStorage.getItem('todo_project_names')) || [] } catch (e) { projectNames = [] }
     try { items = JSON.parse(localStorage.getItem('todo_release_data')) || [] } catch (e) { items = [] }
+    loadBranchCache()
+    loadLaunchBranch()
   }
+  document.getElementById('pmLaunchBranch').value = launchBranch
   updateProjectDatalist()
   renderProjectMgr()
   render()
+  autoFetchBranches()
 }
 
 function updateProjectDatalist() {
@@ -1514,6 +1827,37 @@ function setupProjectDropdown(input) {
 
 function getProjectInfo(name) { return projectNames.find(p => p.name === name) }
 
+function buildMrUrl(mrBase, branchName, targetBranch) {
+  if (!mrBase) return ''
+  const target = targetBranch || launchBranch || 'master_launched'
+  let url = mrBase.replace(/\/+$/, '')
+  // 如果已经是 /merge_requests/new 结尾，直接加参数
+  if (url.includes('/merge_requests/new')) {
+    url = url.replace(/\?.*$/, '')
+  } else if (url.includes('/merge_requests')) {
+    url = url.replace(/\/merge_requests.*$/, '/merge_requests/new')
+  } else {
+    url += '/-/merge_requests/new'
+  }
+  return url + '?merge_request[source_branch]=' + encodeURIComponent(branchName) + '&merge_request[target_branch]=' + encodeURIComponent(target)
+}
+
+function buildBranchUrl(mrBase, refBranch) {
+  if (!mrBase) return ''
+  const ref = refBranch || 'master'
+  const now = new Date()
+  const mm = String(now.getMonth() + 1).padStart(2, '0')
+  const dd = String(now.getDate()).padStart(2, '0')
+  const branchName = 'master-' + mm + dd
+  let url = mrBase.replace(/\/+$/, '')
+  if (url.includes('/merge_requests')) {
+    url = url.replace(/\/merge_requests.*$/, '/branches/new')
+  } else {
+    url += '/-/branches/new'
+  }
+  return url + '?ref=' + encodeURIComponent(ref) + '&branch_name=' + encodeURIComponent(branchName)
+}
+
 function getProjectColorIndex(name) {
   let hash = 0
   for (let i = 0; i < name.length; i++) {
@@ -1581,15 +1925,16 @@ function renderProjectMgr() {
       <div class="edit-row">
         <input id="pmEditName" value="${escHtml(p.name)}" placeholder="项目名称" style="width:150px">
         <input id="pmEditMr" value="${escHtml(p.mr || '')}" placeholder="MR 地址（可选）" style="width:260px">
-        <button class="btn btn-success btn-sm" onclick="saveProjectEdit()">保存</button>
-        <button class="btn btn-outline btn-sm" onclick="cancelProjectEdit()">取消</button>
+        <input id="pmEditPath" value="${escHtml(p.localPath || '')}" placeholder="本地路径（可选）" style="width:200px">
+        <button class="btn btn-success btn-sm" onclick="saveProjectEdit()" title="保存项目修改">保存</button>
+        <button class="btn btn-outline btn-sm" onclick="cancelProjectEdit()" title="取消编辑">取消</button>
       </div>
     `
   } else {
     document.getElementById('pmTagList').innerHTML = projectNames
       .map((p, i) => {
         const colorIdx = getProjectColorIndex(p.name)
-        return `<span class="tag-item"><span class="proj-name project-tag${p.mr ? ' has-mr' : ''}" data-color="${colorIdx}">${escHtml(p.name)}</span>${p.mr ? `<a class="mr-link" href="${escHtml(p.mr)}" target="_blank">MR</a>` : ''}<button class="edit-btn" title="编辑项目" onclick="editProject(${i})">✏️</button><button class="del" title="删除项目" onclick="removeProjectName(${i})">×</button></span>`
+        return `<span class="tag-item"><span class="proj-name project-tag${p.mr ? ' has-mr' : ''}" data-color="${colorIdx}">${escHtml(p.name)}</span>${p.mr ? `<a class="mr-link" href="${escHtml(p.mr)}" target="_blank" title="打开 MR 页面">MR</a><a class="mr-link" href="${buildBranchUrl(p.mr, 'master').replace(/'/g, "\\'")}" target="_blank" title="新建分支（基于 master）" style="color:var(--cyan)">NB</a>` : ''}${p.localPath ? `<span class="path-tag" title="${escHtml(p.localPath)}">📁</span>` : ''}<button class="edit-btn" title="编辑项目" onclick="editProject(${i})">✏️</button><button class="del" title="删除项目" onclick="removeProjectName(${i})">×</button></span>`
       }).join('')
   }
 }
@@ -1607,14 +1952,16 @@ function cancelProjectEdit() {
 function saveProjectEdit() {
   const nameInput = document.getElementById('pmEditName')
   const mrInput = document.getElementById('pmEditMr')
+  const pathInput = document.getElementById('pmEditPath')
   const newName = nameInput.value.trim()
   const newMr = mrInput.value.trim()
+  const newPath = pathInput.value.trim()
   if (!newName) { nameInput.focus(); return }
   const oldName = projectNames[editingProjectIdx].name
   if (newName !== oldName && projectNames.some(p => p.name === newName)) {
     toast('项目名称已存在'); nameInput.focus(); return
   }
-  projectNames[editingProjectIdx] = { name: newName, mr: newMr || '' }
+  projectNames[editingProjectIdx] = { name: newName, mr: newMr || '', localPath: newPath || '' }
   editingProjectIdx = -1
   updateProjectDatalist(); renderProjectMgr(); saveToLocalStorage()
   toast('已更新 ' + newName)
@@ -1623,12 +1970,14 @@ function saveProjectEdit() {
 function addProjectName() {
   const input = document.getElementById('pmNewName')
   const mrInput = document.getElementById('pmNewMr')
+  const pathInput = document.getElementById('pmNewPath')
   const name = input.value.trim()
   const mr = mrInput.value.trim()
+  const localPath = pathInput.value.trim()
   if (!name) return
-  if (projectNames.some(p => p.name === name)) { input.value = ''; return }
-  projectNames.push({ name, mr: mr || '' })
-  input.value = ''; mrInput.value = ''
+  if (projectNames.some(p => p.name === name)) { input.value = ''; toast('项目已存在'); return }
+  projectNames.push({ name, mr: mr || '', localPath: localPath || '' })
+  input.value = ''; mrInput.value = ''; pathInput.value = ''
   updateProjectDatalist(); renderProjectMgr(); saveToLocalStorage()
   toast('已添加 ' + name)
 }
@@ -1648,6 +1997,16 @@ function escHtml(str) {
   const div = document.createElement('div')
   div.textContent = str
   return div.innerHTML
+}
+
+function truncateBranch(name, maxLen) {
+  if (!name || name.length <= maxLen) return name
+  return name.substring(0, maxLen) + '...'
+}
+
+function escAttr(str) {
+  if (!str) return ''
+  return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
 function truncateUrl(url) {
@@ -1681,9 +2040,11 @@ function copyText(text) {
 // ============= Render =============
 function render() {
   const pending = filterItems(items.filter(i => i.status === 'pending' || i.status === 'new'))
+  const releasing = filterItems(items.filter(i => i.status === 'releasing'))
   const released = filterItems(items.filter(i => i.status === 'released'))
 
   document.getElementById('pendingCount').textContent = pending.length || '0'
+  document.getElementById('releasingCount').textContent = releasing.length || '0'
   document.getElementById('releasedCount').textContent = released.length || '0'
 
   // 默认展开待发版
@@ -1694,9 +2055,18 @@ function render() {
     pendingArrow.classList.add('open')
   }
 
+  // 发版中有数据时默认展开
+  const releasingBody = document.getElementById('releasingBody')
+  const releasingArrow = document.getElementById('releasingArrow')
+  if (releasing.length > 0 && !releasingBody.classList.contains('expanded')) {
+    releasingBody.classList.add('expanded')
+    releasingArrow.classList.add('open')
+  }
+
   const pTbody = document.getElementById('pendingTbody')
+  const rlTbody = document.getElementById('releasingTbody')
   const rTbody = document.getElementById('releasedTbody')
-  pTbody.innerHTML = ''; rTbody.innerHTML = ''
+  pTbody.innerHTML = ''; rlTbody.innerHTML = ''; rTbody.innerHTML = ''
 
   addingItems.forEach(ai => {
     const tr = createEditRow(ai, true)
@@ -1709,14 +2079,27 @@ function render() {
     pEmpty.style.display = 'block'
   } else {
     pEmpty.style.display = 'none'
-    pending.forEach((item, idx) => {
+    pending.forEach((item) => {
       const isNew = item._justAdded
       if (isNew) delete item._justAdded
       if (editingIds[item.id]) pTbody.appendChild(createEditRow(item, false))
-      else pTbody.appendChild(createDisplayRow(item, isNew))
+      else pTbody.appendChild(createDisplayRow(item, isNew, 'uat'))
     })
   }
 
+  // 发版中
+  const rlEmpty = document.getElementById('releasingEmpty')
+  if (releasing.length === 0) {
+    rlEmpty.style.display = 'block'
+  } else {
+    rlEmpty.style.display = 'none'
+    releasing.forEach(item => {
+      if (editingIds[item.id]) rlTbody.appendChild(createEditRow(item, false))
+      else rlTbody.appendChild(createDisplayRow(item, false, launchBranch || null))
+    })
+  }
+
+  // 已发版
   const rEmpty = document.getElementById('releasedEmpty')
   if (released.length === 0) {
     rEmpty.style.display = 'block'
@@ -1728,7 +2111,53 @@ function render() {
     })
   }
 
+  renderReleasingSummary(releasing)
+  document.getElementById('releaseAllDoneBtn').style.display = releasing.length > 0 ? '' : 'none'
   updateTotalCount()
+}
+
+// 发版中标题旁总结项目类型，点击跳转 MR（源: 上线分支, 目标: master）
+function renderReleasingSummary(releasingItems) {
+  const summary = document.getElementById('releasingProjectSummary')
+  if (!summary) return
+  const projectSet = new Map()
+  releasingItems.forEach(item => {
+    if (item.projects) item.projects.forEach(p => {
+      if (p.name && !projectSet.has(p.name)) {
+        const info = getProjectInfo(p.name)
+        projectSet.set(p.name, info && info.mr ? info.mr : null)
+      }
+    })
+    if (item.syncBranches) item.syncBranches.forEach(sb => {
+      if (sb.project && !projectSet.has(sb.project)) {
+        const info = getProjectInfo(sb.project)
+        projectSet.set(sb.project, info && info.mr ? info.mr : null)
+      }
+    })
+  })
+  if (projectSet.size === 0) { summary.innerHTML = ''; return }
+  summary.innerHTML = '<span style="color:var(--text-muted)">发版项目：</span>' +
+    [...projectSet.entries()].map(([name, mr]) => {
+      const colorIdx = getProjectColorIndex(name)
+      let html = ''
+      if (mr) {
+        const srcBranch = launchBranch || findItemTargetBranch(releasingItems, name) || 'master_launched'
+        const mrUrl = buildMrUrl(mr, srcBranch, 'master')
+        html += `<span class="project-tag has-mr" data-color="${colorIdx}" style="cursor:pointer;font-size:11px" onclick="window.open('${mrUrl.replace(/'/g, "\\'")}','_blank')" title="创建发版 MR → master">${escHtml(name)}</span>`
+      } else {
+        html += `<span class="project-tag" data-color="${colorIdx}" style="font-size:11px">${escHtml(name)}</span>`
+      }
+      return html
+    }).join('')
+}
+
+function findItemTargetBranch(items, projectName) {
+  for (const item of items) {
+    if (item.targetBranches && item.targetBranches[projectName]) {
+      return item.targetBranches[projectName]
+    }
+  }
+  return null
 }
 
 function updateTotalCount() {
@@ -1736,7 +2165,7 @@ function updateTotalCount() {
 }
 
 // ============= Display Row =============
-function createDisplayRow(item, animate) {
+function createDisplayRow(item, animate, targetBranch) {
   const tr = document.createElement('tr')
   if (animate) tr.classList.add('row-fresh')
 
@@ -1751,6 +2180,8 @@ function createDisplayRow(item, animate) {
     ? '<span class="status-tag status-new">新建</span>'
     : item.status === 'pending'
     ? '<span class="status-tag status-pending">待发版</span>'
+    : item.status === 'releasing'
+    ? '<span class="status-tag status-releasing">发版中</span>'
     : '<span class="status-tag status-released">已发版</span>'
   tr.appendChild(tdStatus)
 
@@ -1767,8 +2198,7 @@ function createDisplayRow(item, animate) {
   if (item.projects && item.projects.length > 0) {
     item.projects.forEach(p => {
       const wrapper = document.createElement('div')
-      wrapper.style.cssText = 'margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap'
-
+      wrapper.style.cssText = 'margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:nowrap;white-space:nowrap'
       const info = getProjectInfo(p.name)
       const projTag = document.createElement('span')
       const colorIdx = getProjectColorIndex(p.name)
@@ -1787,11 +2217,11 @@ function createDisplayRow(item, animate) {
         branchTag.className = 'branch-tag'
         const lbl = document.createElement('span')
         lbl.className = 'branch-text'
-        lbl.textContent = p.branch
-        lbl.title = (info && info.mr) ? '复制并跳转 MR' : '复制'
+        lbl.textContent = truncateBranch(p.branch, 40)
+        lbl.title = (info && info.mr) ? '\uD83D\uDD17 ' + p.branch : p.branch
         lbl.onclick = e => {
           e.stopPropagation()
-          if (info && info.mr) { copyText(p.branch).then(() => setTimeout(()=>window.open(info.mr,'_blank'),250)) }
+          if (info && info.mr) { const t = targetBranch || (item.targetBranches && item.targetBranches[p.name]) || null; copyText(p.branch).then(() => setTimeout(()=>window.open(buildMrUrl(info.mr, p.branch, t),'_blank'),250)) }
           else copyText(p.branch)
         }
         branchTag.appendChild(lbl)
@@ -1813,7 +2243,7 @@ function createDisplayRow(item, animate) {
   if (item.syncBranches && item.syncBranches.length > 0) {
     item.syncBranches.forEach(sb => {
       const wrapper = document.createElement('div')
-      wrapper.style.cssText = 'margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap'
+      wrapper.style.cssText = 'margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:nowrap;white-space:nowrap'
       const info = getProjectInfo(sb.project)
       if (sb.project) {
         const projTag = document.createElement('span')
@@ -1832,11 +2262,11 @@ function createDisplayRow(item, animate) {
         const branchTag = document.createElement('span')
         branchTag.className = 'branch-tag'
         const lbl = document.createElement('span')
-        lbl.className = 'branch-text'; lbl.textContent = sb.branch
-        lbl.title = (info && info.mr) ? '复制并跳转 MR' : '复制'
+        lbl.className = 'branch-text'; lbl.textContent = truncateBranch(sb.branch, 40)
+        lbl.title = (info && info.mr) ? '\uD83D\uDD17 ' + sb.branch : sb.branch
         lbl.onclick = e => {
           e.stopPropagation()
-          if (info && info.mr) { copyText(sb.branch).then(() => setTimeout(()=>window.open(info.mr,'_blank'),250)) }
+          if (info && info.mr) { const t = targetBranch || (item.targetBranches && item.targetBranches[sb.project]) || null; copyText(sb.branch).then(() => setTimeout(()=>window.open(buildMrUrl(info.mr, sb.branch, t),'_blank'),250)) }
           else copyText(sb.branch)
         }
         branchTag.appendChild(lbl)
@@ -1865,18 +2295,21 @@ function createDisplayRow(item, animate) {
   const tdAction = document.createElement('td')
   tdAction.className = 'action-btns'
   if (item.status === 'new') {
-    tdAction.innerHTML = `<button class="btn btn-info btn-xs" data-action="edit">编辑</button>
-    <button class="btn btn-warning btn-xs" data-action="markPending">设为待发版</button>
-    <button class="btn btn-danger btn-xs" data-action="delete">删</button>`
+    tdAction.innerHTML = `<button class="btn btn-info btn-xs" data-action="edit" title="编辑需求">编辑</button>
+    <button class="btn btn-warning btn-xs" data-action="markPending" title="将该需求移至待发版">设为待发版</button>
+    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
   } else if (item.status === 'pending') {
-    tdAction.innerHTML = `<button class="btn btn-info btn-xs" data-action="edit">编辑</button>
-    <button class="btn btn-success btn-xs" data-action="release">标记已发版</button>
-    <button class="btn btn-secondary btn-xs" data-action="revertNew">回退新建</button>
-    <button class="btn btn-danger btn-xs" data-action="delete">删</button>`
+    tdAction.innerHTML = `<button class="btn btn-info btn-xs" data-action="edit" title="编辑需求">编辑</button>
+    <button class="btn btn-purple btn-xs" data-action="release" title="将该需求开始发版">发版</button>
+    <button class="btn btn-secondary btn-xs" data-action="revertNew" title="退回新建状态">回退新建</button>
+    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
+  } else if (item.status === 'releasing') {
+    tdAction.innerHTML = `<button class="btn btn-success btn-xs" data-action="releaseToReleased" title="标记发版完成">标记已发版</button>
+    <button class="btn btn-warning btn-xs" data-action="unrelease" title="恢复到待发版状态">恢复待发版</button>
+    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
   } else {
-    tdAction.innerHTML = `<button class="btn btn-info btn-xs" data-action="edit">编辑</button>
-    <button class="btn btn-warning btn-xs" data-action="unrelease">恢复待发版</button>
-    <button class="btn btn-danger btn-xs" data-action="delete">删</button>`
+    tdAction.innerHTML = `<button class="btn btn-warning btn-xs" data-action="unrelease" title="恢复到待发版状态">恢复待发版</button>
+    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
   }
   tdAction.addEventListener('click', e => handleAction(e, item.id))
   tr.appendChild(tdAction)
@@ -1899,6 +2332,8 @@ function createEditRow(item, isNew) {
     ? '<span class="status-tag status-new">新建</span>'
     : item.status === 'pending'
     ? '<span class="status-tag status-pending">待发版</span>'
+    : item.status === 'releasing'
+    ? '<span class="status-tag status-releasing">发版中</span>'
     : '<span class="status-tag status-released">已发版</span>'
   tr.appendChild(tdStatus)
 
@@ -1916,8 +2351,9 @@ function createEditRow(item, isNew) {
 
   const addPairRow = (proj, branch) => {
     const row = document.createElement('div'); row.className = 'pair-row'
-    row.innerHTML = `<input placeholder="项目名" size="10" data-role="projectName" value="${escHtml(proj||'')}" autocomplete="off"><input placeholder="分支名" size="14" data-role="projectBranch" value="${escHtml(branch||'')}"><button class="btn btn-danger btn-xs">&times;</button>`
-    row.querySelector('button').onclick = () => row.remove()
+    row.innerHTML = `<input placeholder="项目名" size="10" data-role="projectName" value="${escHtml(proj||'')}" autocomplete="off"><input placeholder="分支名" size="14" data-role="projectBranch" value="${escHtml(branch||'')}" oninput="this.value=this.value.replace(/\s/g,'');this.title=this.value"><button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支">📂</button><button class="btn btn-danger btn-xs" title="移除此行">×</button>`
+    row.querySelector('.btn-danger').onclick = () => row.remove()
+    row.querySelector('.branch-lookup-btn').onclick = () => openBranchLookup(row.querySelector('[data-role="projectBranch"]'), row.querySelector('[data-role="projectName"]'))
     // 添加项目下拉功能
     const projInput = row.querySelector('[data-role="projectName"]')
     setupProjectDropdown(projInput)
@@ -1939,8 +2375,9 @@ function createEditRow(item, isNew) {
 
   const addSyncRow = (proj, branch) => {
     const row = document.createElement('div'); row.className = 'pair-row'
-    row.innerHTML = `<input placeholder="项目名" size="10" data-role="syncProjectName" value="${escHtml(proj||'')}" autocomplete="off"><input placeholder="分支名" size="14" data-role="syncBranchName" value="${escHtml(branch||'')}"><button class="btn btn-danger btn-xs">&times;</button>`
-    row.querySelector('button').onclick = () => row.remove()
+    row.innerHTML = `<input placeholder="项目名" size="10" data-role="syncProjectName" value="${escHtml(proj||'')}" autocomplete="off"><input placeholder="分支名" size="14" data-role="syncBranchName" value="${escHtml(branch||'')}" oninput="this.value=this.value.replace(/\s/g,'');this.title=this.value"><button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支">📂</button><button class="btn btn-danger btn-xs" title="移除此行">×</button>`
+    row.querySelector('.btn-danger').onclick = () => row.remove()
+    row.querySelector('.branch-lookup-btn').onclick = () => openBranchLookup(row.querySelector('[data-role="syncBranchName"]'), row.querySelector('[data-role="syncProjectName"]'))
     // 添加项目下拉功能
     const projInput = row.querySelector('[data-role="syncProjectName"]')
     setupProjectDropdown(projInput)
@@ -1966,8 +2403,8 @@ function createEditRow(item, isNew) {
   // Actions
   const tdAction = document.createElement('td')
   tdAction.className = 'action-btns'
-  tdAction.innerHTML = `<button class="btn btn-success btn-xs" data-action="save">保存</button>
-  <button class="btn btn-secondary btn-xs" data-action="cancel">取消</button>`
+  tdAction.innerHTML = `<button class="btn btn-success btn-xs" data-action="save" title="保存修改">保存</button>
+  <button class="btn btn-secondary btn-xs" data-action="cancel" title="取消编辑">取消</button>`
   tdAction.addEventListener('click', e => handleAction(e, item.id))
   tr.appendChild(tdAction)
   return tr
@@ -2010,7 +2447,11 @@ function handleAction(e, itemId) {
   e.stopPropagation()
 
   switch (action) {
-    case 'edit': editingIds[itemId] = true; render(); break
+    case 'edit': {
+      const item = items.find(i => i.id === itemId)
+      if (item && (item.status === 'releasing' || item.status === 'released')) { toast('发版中/已发版不支持编辑'); break }
+      editingIds[itemId] = true; render(); break
+    }
     case 'save': {
       const data = collectEditRowData(itemId)
       if (!data || !data.name) { toast('请输入需求名称'); return }
@@ -2036,6 +2477,23 @@ function handleAction(e, itemId) {
       else delete editingIds[itemId]
       render(); break
     case 'release': {
+      const item = items.find(i => i.id === itemId)
+      if (!item) break
+      // 检查是否已设置上线分支
+      if (!launchBranch) {
+        pendingReleaseItemId = itemId
+        if (showLaunchBranchPrompt(item)) break // 弹窗已显示，等待填写
+        // 所有项目已有上线分支，直接继承
+        item.targetBranches = getReleasedProjectTargets()
+      }
+      if (item) {
+        item.status = 'releasing'
+        item.releaseTime = formatReleaseTime(new Date())
+        toast('\u2713 已开始发版：' + item.name)
+      }
+      saveToLocalStorage(); render(); break
+    }
+    case 'releaseToReleased': {
       const item = items.find(i => i.id === itemId)
       if (item) {
         item.status = 'released'
@@ -2074,14 +2532,166 @@ function startAdding() {
 function releaseAll() {
   const pending = items.filter(i => i.status === 'pending')
   if (pending.length === 0) { toast('没有待发版的需求'); return }
+  if (!launchBranch) {
+    pendingReleaseItemId = '__all__'
+    if (showBatchLaunchPrompt(pending)) return // 弹窗已显示，等待填写
+    // 所有项目已有上线分支，直接继承
+  }
+  const existingTargets = getReleasedProjectTargets()
   const releaseTime = formatReleaseTime(new Date())
-  pending.forEach(i => { i.status = 'released'; i.releaseTime = releaseTime })
+  pending.forEach(i => { i.status = 'releasing'; i.releaseTime = releaseTime; i.targetBranches = existingTargets })
   saveToLocalStorage(); render()
-  toast('已全部标记为已发版（' + pending.length + ' 条）')
+  toast('已全部开始发版（' + pending.length + ' 条）')
+}
+
+function releaseAllToDone() {
+  const releasing = items.filter(i => i.status === 'releasing')
+  if (releasing.length === 0) { toast('没有发版中的需求'); return }
+  const releaseTime = formatReleaseTime(new Date())
+  releasing.forEach(i => { i.status = 'released'; i.releaseTime = releaseTime })
+  saveToLocalStorage(); render()
+  toast('已全部完成发版（' + releasing.length + ' 条）')
 }
 
 // ============= Confirm =============
 let pendingDeleteId = null
+let pendingReleaseItemId = null
+
+// 保存上线分支名（全局）
+function saveLaunchBranchName() {
+  const val = document.getElementById('pmLaunchBranch').value.trim()
+  launchBranch = val
+  saveLaunchBranch()
+  render()
+  if (val) toast('上线分支已设为：' + launchBranch)
+  else toast('已清除上线分支')
+}
+
+// 获取发版中已有目标分支的项目集合
+function getReleasedProjectTargets() {
+  const targets = {}
+  const released = items.filter(i => i.status === 'releasing')
+  released.forEach(item => {
+    if (item.targetBranches) {
+      Object.entries(item.targetBranches).forEach(([k, v]) => { targets[k] = v })
+    }
+  })
+  return targets
+}
+
+// 弹出批量发版项目上线分支填写弹窗
+function showBatchLaunchPrompt(pendingItems) {
+  const msg = document.getElementById('launchBranchMsg')
+  const list = document.getElementById('launchBranchProjectList')
+  msg.textContent = '批量发版（共 ' + pendingItems.length + ' 条需求）'
+
+  const existingTargets = getReleasedProjectTargets()
+
+  const projects = []
+  const seen = new Set()
+  pendingItems.forEach(item => {
+    if (item.projects) item.projects.forEach(p => {
+      if (p.name && !seen.has(p.name) && !existingTargets[p.name]) { seen.add(p.name); projects.push(p.name) }
+    })
+    if (item.syncBranches) item.syncBranches.forEach(sb => {
+      if (sb.project && !seen.has(sb.project) && !existingTargets[sb.project]) { seen.add(sb.project); projects.push(sb.project) }
+    })
+  })
+
+  if (projects.length === 0) return false // 全部已有，无需弹窗
+
+  renderLaunchProjectList(list, projects)
+  document.getElementById('launchBranchOverlay').style.display = 'flex'
+  setTimeout(() => {
+    const first = list.querySelector('.launch-target-input')
+    if (first) first.focus()
+  }, 100)
+  return true
+}
+
+// 弹出需求项目上线分支填写弹窗
+function showLaunchBranchPrompt(item) {
+  const msg = document.getElementById('launchBranchMsg')
+  const list = document.getElementById('launchBranchProjectList')
+  msg.textContent = '需求：' + item.name
+
+  const existingTargets = getReleasedProjectTargets()
+
+  const projects = []
+  const seen = new Set()
+  if (item.projects) item.projects.forEach(p => {
+    if (p.name && !seen.has(p.name) && !existingTargets[p.name]) { seen.add(p.name); projects.push(p.name) }
+  })
+  if (item.syncBranches) item.syncBranches.forEach(sb => {
+    if (sb.project && !seen.has(sb.project) && !existingTargets[sb.project]) { seen.add(sb.project); projects.push(sb.project) }
+  })
+  if (projects.length === 0) return false // 全部已有，无需弹窗
+
+  renderLaunchProjectList(list, projects)
+  document.getElementById('launchBranchOverlay').style.display = 'flex'
+  setTimeout(() => {
+    const first = list.querySelector('.launch-target-input')
+    if (first) first.focus()
+  }, 100)
+  return true
+}
+
+function renderLaunchProjectList(list, projects) {
+  list.innerHTML = projects.map((name) => {
+    const colorIdx = getProjectColorIndex(name)
+    const info = getProjectInfo(name)
+    const defaultTarget = ''
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light)">
+      <span class="project-tag" data-color="${colorIdx}" style="font-size:11px;flex-shrink:0;min-width:80px;text-align:center">${escHtml(name)}</span>
+      <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">→</span>
+      <input class="launch-target-input" data-project="${escHtml(name)}" placeholder="目标分支" value="${escHtml(defaultTarget)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px" onkeydown="if(event.key==='Enter')confirmLaunchBranch()" />
+    </div>`
+  }).join('')
+}
+
+// 从发版弹窗确认
+function confirmLaunchBranch() {
+  const inputs = document.querySelectorAll('#launchBranchProjectList .launch-target-input')
+  const targetBranches = {}
+  let allFilled = true
+  inputs.forEach(inp => {
+    const val = inp.value.trim()
+    const project = inp.dataset.project
+    if (!val) { allFilled = false; inp.style.borderColor = 'var(--danger)'; return }
+    inp.style.borderColor = 'var(--border)'
+    targetBranches[project] = val
+  })
+  if (!allFilled) { toast('请填写所有项目的目标分支'); return }
+
+  // 合并其他发版中已填写过的目标分支（弹窗中跳过的项目）
+  const existingTargets = getReleasedProjectTargets()
+  const mergedTargets = { ...existingTargets, ...targetBranches }
+
+  document.getElementById('launchBranchOverlay').style.display = 'none'
+
+  if (pendingReleaseItemId === '__all__') {
+    const pending = items.filter(i => i.status === 'pending')
+    const releaseTime = formatReleaseTime(new Date())
+    pending.forEach(i => { i.status = 'releasing'; i.releaseTime = releaseTime; i.targetBranches = mergedTargets })
+    saveToLocalStorage(); render()
+    toast('已全部开始发版（' + pending.length + ' 条）')
+  } else if (pendingReleaseItemId) {
+    const item = items.find(i => i.id === pendingReleaseItemId)
+    if (item) {
+      item.targetBranches = mergedTargets
+      item.status = 'releasing'
+      item.releaseTime = formatReleaseTime(new Date())
+      toast('\u2713 已开始发版：' + item.name)
+    }
+    saveToLocalStorage(); render()
+  }
+  pendingReleaseItemId = null
+}
+
+function closeLaunchBranchPrompt() {
+  document.getElementById('launchBranchOverlay').style.display = 'none'
+  pendingReleaseItemId = null
+}
 
 function showConfirm(id) {
   pendingDeleteId = id
@@ -2108,10 +2718,24 @@ document.getElementById('confirmOverlay').onclick = e => {
   if (e.target === document.getElementById('confirmOverlay')) closeConfirm()
 }
 
+document.getElementById('launchBranchOverlay').onclick = e => {
+  if (e.target === document.getElementById('launchBranchOverlay')) closeLaunchBranchPrompt()
+}
+
 // ============= Collapse =============
 function togglePending() {
   const body = document.getElementById('pendingBody')
   const arrow = document.getElementById('pendingArrow')
+  if (body.classList.contains('expanded')) {
+    body.classList.remove('expanded'); arrow.classList.remove('open')
+  } else {
+    body.classList.add('expanded'); arrow.classList.add('open')
+  }
+}
+
+function toggleReleasing() {
+  const body = document.getElementById('releasingBody')
+  const arrow = document.getElementById('releasingArrow')
   if (body.classList.contains('expanded')) {
     body.classList.remove('expanded'); arrow.classList.remove('open')
   } else {
@@ -2138,6 +2762,7 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Escape') {
     if (document.getElementById('confirmOverlay').style.display === 'flex') closeConfirm()
+    if (document.getElementById('launchBranchOverlay').style.display === 'flex') closeLaunchBranchPrompt()
     if (searchQuery) clearSearch()
   }
 })
@@ -2145,7 +2770,7 @@ document.addEventListener('keydown', e => {
 // ============= Daily reminder =============
 function getTodayStr() {
   const d = new Date()
-  return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
 }
 
 function checkDailyReminder() {
@@ -2163,6 +2788,279 @@ function dismissReminder() {
 function exportAndDismiss() {
   exportToFile()
   dismissReminder()
+}
+
+// 自动后台获取分支（每天最多一次）
+async function autoFetchBranches() {
+  const lastFetchDate = localStorage.getItem('todo_last_branch_fetch_date')
+  if (lastFetchDate === getTodayStr()) return
+
+  const projectsWithPath = projectNames.filter(p => p.localPath)
+  if (projectsWithPath.length === 0) return
+
+  // 检查服务器是否运行
+  try {
+    const resp = await fetch('http://localhost:3000/api/git-user')
+    if (!resp.ok) return
+  } catch (e) { return }
+
+  // 获取 git 用户名
+  let gitUser = null
+  try {
+    const userRes = await fetch('http://localhost:3000/api/git-user')
+    const userData = await userRes.json()
+    gitUser = userData.user
+  } catch (e) {}
+
+  // 显示进度条
+  const progressEl = document.getElementById('branchProgress')
+  const progressBar = document.getElementById('branchProgressBar')
+  const progressText = document.getElementById('branchProgressText')
+  const total = projectsWithPath.length
+  progressEl.style.display = 'block'
+  progressBar.style.width = '0%'
+  progressText.textContent = `0/${total}`
+
+  let done = 0
+  for (const project of projectsWithPath) {
+    try {
+      const url = `http://localhost:3000/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
+      const res = await fetch(url)
+      const data = await res.json()
+      if (!data.error && data.branches) {
+        branchesCache[project.name] = { branches: data.branches, timestamp: Date.now() }
+      }
+    } catch (e) {}
+    done++
+    progressBar.style.width = `${(done / total) * 100}%`
+    progressText.textContent = `${done}/${total}`
+  }
+
+  // 记录已获取日期，隐藏进度条
+  localStorage.setItem('todo_last_branch_fetch_date', getTodayStr())
+  saveBranchCache()
+  setTimeout(() => { progressEl.style.display = 'none' }, 800)
+}
+
+// 在表格行中点击按钮——打开单个项目的分支弹窗，点击填充
+async function openBranchLookup(branchInput, projInput) {
+  const projectName = (projInput ? projInput.value : '').trim()
+  if (!projectName) { toast('请先输入项目名'); return }
+
+  const project = projectNames.find(p => p.name === projectName)
+  if (!project || !project.localPath) { toast('该项目未配置本地路径'); return }
+
+  // 先检查缓存
+  const cached = branchesCache[projectName]
+  if (cached && cached.branches && cached.branches.length > 0) {
+    const filtered = cached.branches.filter(b => b.branch && b.branch !== 'origin' && !b.branch.startsWith('origin/'))
+    showBranchLookupPopup(branchInput, project, filtered)
+    return
+  }
+
+  // 检查服务器
+  try {
+    const resp = await fetch('http://localhost:3000/api/git-user')
+    if (!resp.ok) throw new Error('服务器未响应')
+  } catch (e) {
+    toast('请先启动服务器: node server.js')
+    return
+  }
+
+  toast('正在获取分支...')
+
+  let gitUser = null
+  try {
+    const userRes = await fetch('http://localhost:3000/api/git-user')
+    const userData = await userRes.json()
+    gitUser = userData.user
+  } catch (e) {}
+
+  let branches = []
+  try {
+    const url = `http://localhost:3000/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
+    const res = await fetch(url)
+    const data = await res.json()
+    if (data.branches) {
+      branches = data.branches
+      branchesCache[projectName] = { branches: data.branches, timestamp: Date.now() }
+      saveBranchCache()
+    }
+  } catch (e) {}
+
+  showBranchLookupPopup(branchInput, project, branches)
+}
+
+// 渲染分支查找弹窗
+function showBranchLookupPopup(branchInput, project, branches) {
+  const overlay = document.createElement('div')
+  overlay.className = 'branch-overlay'
+  overlay._targetInput = branchInput
+  overlay.innerHTML = `
+    <div class="branch-modal" style="max-width:500px">
+      <div class="branch-header">
+        <h3>${escHtml(project.name)} 分支列表</h3>
+        <button class="btn-close" onclick="this.closest('.branch-overlay').remove()" title="关闭">×</button>
+      </div>
+      <div class="branch-content">
+        ${branches.length > 0 ? `
+          <div class="branch-project">
+            <div class="branch-project-name">${escHtml(project.name)} <span class="branch-count">${branches.length}个分支</span></div>
+            <div class="branch-list">
+              ${branches.map(b => `
+                <div class="branch-item" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
+                  <span class="branch-name">${escHtml(b.branch)}</span>
+                  <span class="branch-date">${b.date}</span>
+                  <span class="branch-author">${escHtml(b.author)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : `<div class="branch-empty">未找到分支</div>`}
+      </div>
+      <div class="branch-footer">
+        <button class="btn btn-outline btn-sm" onclick="this.closest('.branch-overlay').remove()" title="关闭弹窗">关闭</button>
+      </div>
+    </div>
+  `
+  document.body.appendChild(overlay)
+}
+
+// 点击分支后填充到 input
+function fillBranchToInput(branchName, overlay) {
+  const branchClean = branchName.replace(/\s/g, '')
+  if (overlay && overlay._targetInput) {
+    overlay._targetInput.value = branchClean
+    overlay._targetInput.title = branchClean
+    toast('已填充: ' + branchClean)
+  }
+  overlay.remove()
+}
+
+// 获取所有项目的分支
+async function fetchAllBranches() {
+  const projectsWithPath = projectNames.filter(p => p.localPath)
+  if (projectsWithPath.length === 0) {
+    toast('没有配置本地路径的项目')
+    return
+  }
+
+  // 检查服务器是否运行
+  try {
+    const response = await fetch('http://localhost:3000/api/git-user')
+    if (!response.ok) throw new Error('服务器未响应')
+  } catch (e) {
+    toast('请先启动服务器: node server.js')
+    return
+  }
+
+  // 获取git用户名
+  let gitUser = null
+  try {
+    const userRes = await fetch('http://localhost:3000/api/git-user')
+    const userData = await userRes.json()
+    gitUser = userData.user
+  } catch (e) {}
+
+  toast('正在获取分支...')
+
+  // 创建结果弹窗
+  const overlay = document.createElement('div')
+  overlay.className = 'branch-overlay'
+  overlay.innerHTML = `
+    <div class="branch-modal">
+      <div class="branch-header">
+        <h3>分支列表</h3>
+        <button class="btn-close" onclick="this.closest('.branch-overlay').remove()" title="关闭">×</button>
+      </div>
+      <div class="branch-content" id="branchContent">
+        <div class="branch-loading">正在获取...</div>
+      </div>
+      <div class="branch-footer">
+        <button class="btn btn-outline btn-sm" onclick="this.closest('.branch-overlay').remove()" title="关闭弹窗">关闭</button>
+      </div>
+    </div>
+  `
+  document.body.appendChild(overlay)
+
+  const content = overlay.querySelector('#branchContent')
+  let html = ''
+
+  for (const project of projectsWithPath) {
+    try {
+      const url = `http://localhost:3000/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
+      const res = await fetch(url)
+      const data = await res.json()
+
+      if (data.error) {
+        html += `<div class="branch-project">
+          <div class="branch-project-name">${escHtml(project.name)}</div>
+          <div class="branch-error">${escHtml(data.error)}</div>
+        </div>`
+      } else if (data.branches && data.branches.length > 0) {
+        branchesCache[project.name] = { branches: data.branches, timestamp: Date.now() }
+        html += `<div class="branch-project">
+          <div class="branch-project-name">${escHtml(project.name)} <span class="branch-count">${data.branches.length}个分支</span></div>
+          <div class="branch-list">
+            ${data.branches.map(b => `
+              <div class="branch-item" style="cursor:pointer" onclick="copyBranchName('${escAttr(b.branch)}')">
+                <span class="branch-name">${escHtml(b.branch)}</span>
+                <span class="branch-date">${b.date}</span>
+                <span class="branch-author">${escHtml(b.author)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>`
+      } else {
+        html += `<div class="branch-project">
+          <div class="branch-project-name">${escHtml(project.name)}</div>
+          <div class="branch-empty">未找到分支</div>
+        </div>`
+      }
+    } catch (e) {
+      html += `<div class="branch-project">
+        <div class="branch-project-name">${escHtml(project.name)}</div>
+        <div class="branch-error">获取失败: ${escHtml(e.message)}</div>
+      </div>`
+    }
+  }
+
+  saveBranchCache()
+  content.innerHTML = html
+}
+
+function copyBranchName(name) {
+  navigator.clipboard.writeText(name).then(() => {
+    toast('已复制: ' + name)
+  })
+}
+
+function selectBranch(projectName, branchName) {
+  // 在所有 pair-row 中查找匹配的项目名，填充分支名
+  branchName = branchName.replace(/\s/g, '') // 去除空格
+  const allBranchInputs = document.querySelectorAll('[data-role="projectBranch"], [data-role="syncBranchName"]')
+  let filled = 0
+  allBranchInputs.forEach(inp => {
+    const row = inp.closest('.pair-row')
+    if (!row) return
+    const role = inp.dataset.role
+    const projRole = role === 'projectBranch' ? 'projectName' : 'syncProjectName'
+    const projInput = row.querySelector(`[data-role="${projRole}"]`)
+    if (projInput && projInput.value.trim() === projectName) {
+      if (!inp.value.trim()) {
+        inp.value = branchName
+        filled++
+      }
+    }
+  })
+  if (filled > 0) {
+    toast(`已填充 ${filled} 个分支字段: ${branchName}`)
+  } else {
+    toast('未找到对应项目或分支名已填写')
+  }
+  // 关闭弹窗
+  const overlay = document.querySelector('.branch-overlay')
+  if (overlay) overlay.remove()
 }
 
 // Start
