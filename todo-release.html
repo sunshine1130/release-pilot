@@ -1172,6 +1172,7 @@ input[data-role="syncProjectName"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-sm);
   padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--border);
 }
@@ -1180,6 +1181,23 @@ input[data-role="syncProjectName"] {
   font-weight: 700;
   color: var(--text);
   margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.branch-header .header-search {
+  flex: 1;
+  max-width: 260px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  margin-left: auto;
+}
+.branch-header .header-search:focus {
+  border-color: var(--accent);
 }
 .branch-header .btn-close {
   background: none;
@@ -1263,6 +1281,15 @@ input[data-role="syncProjectName"] {
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
+}
+
+.branch-item.hidden-by-search {
+  display: none;
+}
+
+.branch-item.released-branch .branch-name {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }
 
 /* ===== Empty state ===== */
@@ -1565,6 +1592,8 @@ input[data-role="syncProjectName"] {
 </div>
 
 <script>
+// ============= Config =============
+const API_PORT = 1949
 // ============= Data =============
 let projectNames = []
 let items = []
@@ -2800,14 +2829,14 @@ async function autoFetchBranches() {
 
   // 检查服务器是否运行
   try {
-    const resp = await fetch('http://localhost:3000/api/git-user')
+    const resp = await fetch('http://localhost:' + API_PORT + '/api/git-user')
     if (!resp.ok) return
   } catch (e) { return }
 
   // 获取 git 用户名
   let gitUser = null
   try {
-    const userRes = await fetch('http://localhost:3000/api/git-user')
+    const userRes = await fetch('http://localhost:' + API_PORT + '/api/git-user')
     const userData = await userRes.json()
     gitUser = userData.user
   } catch (e) {}
@@ -2824,7 +2853,7 @@ async function autoFetchBranches() {
   let done = 0
   for (const project of projectsWithPath) {
     try {
-      const url = `http://localhost:3000/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
+      const url = `http://localhost:${API_PORT}/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
       const res = await fetch(url)
       const data = await res.json()
       if (!data.error && data.branches) {
@@ -2860,7 +2889,7 @@ async function openBranchLookup(branchInput, projInput) {
 
   // 检查服务器
   try {
-    const resp = await fetch('http://localhost:3000/api/git-user')
+    const resp = await fetch('http://localhost:' + API_PORT + '/api/git-user')
     if (!resp.ok) throw new Error('服务器未响应')
   } catch (e) {
     toast('请先启动服务器: node server.js')
@@ -2871,14 +2900,14 @@ async function openBranchLookup(branchInput, projInput) {
 
   let gitUser = null
   try {
-    const userRes = await fetch('http://localhost:3000/api/git-user')
+    const userRes = await fetch('http://localhost:' + API_PORT + '/api/git-user')
     const userData = await userRes.json()
     gitUser = userData.user
   } catch (e) {}
 
   let branches = []
   try {
-    const url = `http://localhost:3000/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
+    const url = `http://localhost:${API_PORT}/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
     const res = await fetch(url)
     const data = await res.json()
     if (data.branches) {
@@ -2891,32 +2920,50 @@ async function openBranchLookup(branchInput, projInput) {
   showBranchLookupPopup(branchInput, project, branches)
 }
 
+// 收集所有已发布需求中的分支（项目名→分支名集合）
+function getReleasedBranchSet() {
+  const released = items.filter(i => i.status === 'released')
+  const set = new Set()
+  released.forEach(item => {
+    if (item.projects) item.projects.forEach(p => {
+      if (p.name && p.branch) set.add(p.name + '\x00' + p.branch.trim())
+    })
+    if (item.syncBranches) item.syncBranches.forEach(sb => {
+      if (sb.project && sb.branch) set.add(sb.project + '\x00' + sb.branch.trim())
+    })
+  })
+  return set
+}
+
 // 渲染分支查找弹窗
 function showBranchLookupPopup(branchInput, project, branches) {
   const overlay = document.createElement('div')
   overlay.className = 'branch-overlay'
   overlay._targetInput = branchInput
+  overlay._branches = branches
+  overlay._project = project
+  const releasedSet = getReleasedBranchSet()
+  const releasedClass = (b) => releasedSet.has(project.name + '\x00' + (b.branch || '').trim()) ? ' released-branch' : ''
   overlay.innerHTML = `
     <div class="branch-modal" style="max-width:500px">
       <div class="branch-header">
         <h3>${escHtml(project.name)} 分支列表</h3>
+        <input class="header-search" placeholder="搜索分支..." oninput="filterBranchPopup(this)">
         <button class="btn-close" onclick="this.closest('.branch-overlay').remove()" title="关闭">×</button>
       </div>
-      <div class="branch-content">
-        ${branches.length > 0 ? `
-          <div class="branch-project">
-            <div class="branch-project-name">${escHtml(project.name)} <span class="branch-count">${branches.length}个分支</span></div>
-            <div class="branch-list">
-              ${branches.map(b => `
-                <div class="branch-item" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
-                  <span class="branch-name">${escHtml(b.branch)}</span>
-                  <span class="branch-date">${b.date}</span>
-                  <span class="branch-author">${escHtml(b.author)}</span>
-                </div>
-              `).join('')}
-            </div>
+      <div class="branch-content" id="branchPopupContent">
+        <div class="branch-project">
+          <div class="branch-project-name">${escHtml(project.name)} <span class="branch-count">${branches.length}个分支</span></div>
+          <div class="branch-list" id="branchPopupList">
+            ${branches.length > 0 ? branches.map(b => `
+              <div class="branch-item${releasedClass(b)}" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
+                <span class="branch-name">${escHtml(b.branch)}</span>
+                <span class="branch-date">${b.date}</span>
+                <span class="branch-author">${escHtml(b.author)}</span>
+              </div>
+            `).join('') : '<div class="branch-empty">未找到分支</div>'}
           </div>
-        ` : `<div class="branch-empty">未找到分支</div>`}
+        </div>
       </div>
       <div class="branch-footer">
         <button class="btn btn-outline btn-sm" onclick="this.closest('.branch-overlay').remove()" title="关闭弹窗">关闭</button>
@@ -2947,7 +2994,7 @@ async function fetchAllBranches() {
 
   // 检查服务器是否运行
   try {
-    const response = await fetch('http://localhost:3000/api/git-user')
+    const response = await fetch('http://localhost:' + API_PORT + '/api/git-user')
     if (!response.ok) throw new Error('服务器未响应')
   } catch (e) {
     toast('请先启动服务器: node server.js')
@@ -2957,7 +3004,7 @@ async function fetchAllBranches() {
   // 获取git用户名
   let gitUser = null
   try {
-    const userRes = await fetch('http://localhost:3000/api/git-user')
+    const userRes = await fetch('http://localhost:' + API_PORT + '/api/git-user')
     const userData = await userRes.json()
     gitUser = userData.user
   } catch (e) {}
@@ -2971,6 +3018,7 @@ async function fetchAllBranches() {
     <div class="branch-modal">
       <div class="branch-header">
         <h3>分支列表</h3>
+        <input class="header-search" placeholder="搜索分支..." oninput="filterBranchItems(this)" id="branchSearchMulti">
         <button class="btn-close" onclick="this.closest('.branch-overlay').remove()" title="关闭">×</button>
       </div>
       <div class="branch-content" id="branchContent">
@@ -2985,10 +3033,11 @@ async function fetchAllBranches() {
 
   const content = overlay.querySelector('#branchContent')
   let html = ''
+  const releasedSet = getReleasedBranchSet()
 
   for (const project of projectsWithPath) {
     try {
-      const url = `http://localhost:3000/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
+      const url = `http://localhost:${API_PORT}/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
       const res = await fetch(url)
       const data = await res.json()
 
@@ -2999,16 +3048,18 @@ async function fetchAllBranches() {
         </div>`
       } else if (data.branches && data.branches.length > 0) {
         branchesCache[project.name] = { branches: data.branches, timestamp: Date.now() }
+        const pName = project.name
         html += `<div class="branch-project">
           <div class="branch-project-name">${escHtml(project.name)} <span class="branch-count">${data.branches.length}个分支</span></div>
           <div class="branch-list">
-            ${data.branches.map(b => `
-              <div class="branch-item" style="cursor:pointer" onclick="copyBranchName('${escAttr(b.branch)}')">
+            ${data.branches.map(b => {
+              const releasedClass = releasedSet.has(pName + '\x00' + (b.branch || '').trim()) ? ' released-branch' : ''
+              return `<div class="branch-item${releasedClass}" style="cursor:pointer" onclick="copyBranchName('${escAttr(b.branch)}')">
                 <span class="branch-name">${escHtml(b.branch)}</span>
                 <span class="branch-date">${b.date}</span>
                 <span class="branch-author">${escHtml(b.author)}</span>
-              </div>
-            `).join('')}
+              </div>`
+            }).join('')}
           </div>
         </div>`
       } else {
@@ -3032,6 +3083,57 @@ async function fetchAllBranches() {
 function copyBranchName(name) {
   navigator.clipboard.writeText(name).then(() => {
     toast('已复制: ' + name)
+  })
+}
+
+// 分支弹窗模糊搜索（单项目弹窗）
+function filterBranchPopup(input) {
+  const overlay = input.closest('.branch-overlay')
+  const branches = overlay._branches || []
+  const projectName = overlay._project ? overlay._project.name : ''
+  const releasedSet = getReleasedBranchSet()
+  const releasedClass = (b) => releasedSet.has(projectName + '\x00' + (b.branch || '').trim()) ? ' released-branch' : ''
+  const keyword = input.value.trim().toLowerCase()
+  const list = document.getElementById('branchPopupList')
+  if (!list) return
+
+  if (!keyword) {
+    list.innerHTML = branches.map(b => `
+      <div class="branch-item${releasedClass(b)}" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
+        <span class="branch-name">${escHtml(b.branch)}</span>
+        <span class="branch-date">${b.date}</span>
+        <span class="branch-author">${escHtml(b.author)}</span>
+      </div>
+    `).join('')
+  } else {
+    const filtered = branches.filter(b => b.branch.toLowerCase().includes(keyword))
+    list.innerHTML = filtered.length > 0
+      ? filtered.map(b => `
+        <div class="branch-item${releasedClass(b)}" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
+          <span class="branch-name">${escHtml(b.branch)}</span>
+          <span class="branch-date">${b.date}</span>
+          <span class="branch-author">${escHtml(b.author)}</span>
+        </div>
+      `).join('')
+      : '<div class="branch-empty">无匹配分支</div>'
+  }
+}
+
+// 分支列表模糊搜索（多项目弹窗）
+function filterBranchItems(input) {
+  const keyword = input.value.trim().toLowerCase()
+  const content = input.closest('.branch-modal').querySelector('.branch-content')
+  if (!content) return
+  const items = content.querySelectorAll('.branch-item')
+  items.forEach(item => {
+    const nameEl = item.querySelector('.branch-name')
+    const name = nameEl ? nameEl.textContent.toLowerCase() : ''
+    item.classList.toggle('hidden-by-search', !!keyword && !name.includes(keyword))
+  })
+  // 隐藏空的 branch-project
+  content.querySelectorAll('.branch-project').forEach(proj => {
+    const visibleItems = proj.querySelectorAll('.branch-item:not(.hidden-by-search)')
+    proj.style.display = keyword && visibleItems.length === 0 ? 'none' : ''
   })
 }
 
