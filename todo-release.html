@@ -1877,7 +1877,7 @@ function buildBranchUrl(mrBase, refBranch) {
   const now = new Date()
   const mm = String(now.getMonth() + 1).padStart(2, '0')
   const dd = String(now.getDate()).padStart(2, '0')
-  const branchName = 'master-' + mm + dd
+  const branchName = 'master_' + mm + dd
   let url = mrBase.replace(/\/+$/, '')
   if (url.includes('/merge_requests')) {
     url = url.replace(/\/merge_requests.*$/, '/branches/new')
@@ -2112,7 +2112,7 @@ function render() {
       const isNew = item._justAdded
       if (isNew) delete item._justAdded
       if (editingIds[item.id]) pTbody.appendChild(createEditRow(item, false))
-      else pTbody.appendChild(createDisplayRow(item, isNew, 'uat'))
+      else pTbody.appendChild(createDisplayRow(item, isNew, (isNew || item.status === 'new') ? 'test' : 'uat'))
     })
   }
 
