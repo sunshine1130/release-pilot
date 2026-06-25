@@ -805,8 +805,8 @@ input.inline-input {
   border-radius: var(--radius-xl);
   padding: 0;
   box-shadow: var(--shadow-lg);
-  max-width: 520px;
-  width: 90%;
+  max-width: 760px;
+  width: 92%;
   border: 1px solid var(--border);
   animation: dialogIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -837,7 +837,7 @@ input.inline-input {
 }
 .note-body textarea {
   width: 100%;
-  min-height: 200px;
+  min-height: 340px;
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -867,6 +867,31 @@ input.inline-input {
   padding: 12px 20px;
   border-top: 1px solid var(--border-light);
 }
+
+/* ===== Branch right-click context menu ===== */
+.branch-ctx-menu {
+  position: fixed;
+  z-index: 9999;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  min-width: 134px;
+  animation: dialogIn 0.12s ease;
+}
+.branch-ctx-item {
+  padding: 7px 12px;
+  font-size: 13px;
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+.branch-ctx-item:hover { background: var(--bg); }
+.branch-ctx-item.danger { color: var(--danger); }
+.branch-ctx-item.danger:hover { background: var(--danger-bg); }
 
 .td-projects {
   max-width: 450px;
@@ -2309,6 +2334,8 @@ function updateTotalCount() {
 function createDisplayRow(item, animate, targetBranch) {
   const tr = document.createElement('tr')
   if (animate) tr.classList.add('row-fresh')
+  // 仅"待发版"表格（pending/new）支持右键编辑备注
+  const editable = item.status === 'pending' || item.status === 'new'
 
   // Name
   const tdName = document.createElement('td')
@@ -2386,6 +2413,11 @@ function createDisplayRow(item, animate, targetBranch) {
         wrapper.appendChild(noteBtn)
       }
 
+      if (editable) {
+        wrapper.style.cursor = 'context-menu'
+        wrapper.oncontextmenu = e => showBranchContextMenu(e, item.id, pi, 'project')
+      }
+
       tdProjects.appendChild(wrapper)
     })
   } else {
@@ -2443,6 +2475,11 @@ function createDisplayRow(item, animate, targetBranch) {
         noteBtn.dataset.field = 'sync'
         noteBtn.onclick = e => { e.stopPropagation(); openNoteDialog(item.id, sbi, 'sync') }
         wrapper.appendChild(noteBtn)
+      }
+
+      if (editable) {
+        wrapper.style.cursor = 'context-menu'
+        wrapper.oncontextmenu = e => showBranchContextMenu(e, item.id, sbi, 'sync')
       }
 
       tdSync.appendChild(wrapper)
@@ -2946,6 +2983,7 @@ document.addEventListener('keydown', e => {
     document.getElementById('searchInput').focus()
   }
   if (e.key === 'Escape') {
+    closeBranchContextMenu()
     if (document.getElementById('noteOverlay').style.display === 'flex') closeNoteDialog()
     if (document.getElementById('confirmOverlay').style.display === 'flex') closeConfirm()
     if (document.getElementById('launchBranchOverlay').style.display === 'flex') closeLaunchBranchPrompt()
@@ -3325,7 +3363,7 @@ function selectBranch(projectName, branchName) {
 // ============= Note Dialog =============
 let noteTarget = null // { itemId, projIndex, field, btnEl } or null for edit mode
 
-function openNoteDialog(itemId, projIndex, field) {
+function openNoteDialog(itemId, projIndex, field, editable) {
   const item = items.find(i => i.id === itemId)
   if (!item) return
   const list = field === 'project' ? item.projects : item.syncBranches
@@ -3335,8 +3373,55 @@ function openNoteDialog(itemId, projIndex, field) {
   const notes = entry ? (entry.notes || '') : ''
   const label = name ? (name + (branch ? ' / ' + truncateBranch(branch, 30) : '')) : (branch || '未知')
   noteTarget = { itemId, projIndex, field }
-  showNoteDialog(label, name, branch, notes, true)
+  showNoteDialog(label, name, branch, notes, !editable)
 }
+
+// ============= Branch right-click context menu =============
+let branchCtxMenu = null
+
+function showBranchContextMenu(e, itemId, projIndex, field) {
+  e.preventDefault()
+  e.stopPropagation()
+  closeBranchContextMenu()
+  const item = items.find(i => i.id === itemId)
+  if (!item) return
+  const list = field === 'project' ? item.projects : item.syncBranches
+  const entry = list && list[projIndex]
+  if (!entry) return
+  const hasNotes = !!(entry.notes && entry.notes.trim())
+  const menu = document.createElement('div')
+  menu.className = 'branch-ctx-menu'
+  menu.innerHTML =
+    '<div class="branch-ctx-item" data-act="edit">📝 ' + (hasNotes ? '编辑备注' : '添加备注') + '</div>' +
+    (hasNotes ? '<div class="branch-ctx-item danger" data-act="clear">🗑️ 清除备注</div>' : '')
+  document.body.appendChild(menu)
+  branchCtxMenu = menu
+  // 视口内定位
+  const mw = menu.offsetWidth, mh = menu.offsetHeight
+  let x = e.clientX, y = e.clientY
+  if (x + mw > window.innerWidth - 8) x = window.innerWidth - mw - 8
+  if (y + mh > window.innerHeight - 8) y = window.innerHeight - mh - 8
+  menu.style.left = Math.max(8, x) + 'px'
+  menu.style.top = Math.max(8, y) + 'px'
+  menu.querySelector('[data-act="edit"]').onclick = () => {
+    closeBranchContextMenu()
+    openNoteDialog(itemId, projIndex, field, true)
+  }
+  const clearEl = menu.querySelector('[data-act="clear"]')
+  if (clearEl) clearEl.onclick = () => {
+    entry.notes = ''
+    saveToLocalStorage()
+    closeBranchContextMenu()
+    render()
+    toast('备注已清除')
+  }
+}
+
+function closeBranchContextMenu() {
+  if (branchCtxMenu) { branchCtxMenu.remove(); branchCtxMenu = null }
+}
+document.addEventListener('click', closeBranchContextMenu)
+document.addEventListener('scroll', closeBranchContextMenu, true)
 
 function openInlineNoteDialog(btnEl, projName, branchName) {
   const notes = btnEl.dataset.notes || ''
