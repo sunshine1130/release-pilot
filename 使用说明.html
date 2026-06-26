@@ -27,7 +27,6 @@
   --radius: 10px;
   --radius-sm: 6px;
   --radius-lg: 12px;
-  --shadow: 0 2px 6px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.03);
   --mono: Consolas,'Fira Code',monospace;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -50,506 +49,386 @@ h1 {
 }
 h1::before {
   content: '';
-  width: 5px;
-  height: 26px;
+  width: 4px;
+  height: 24px;
   background: linear-gradient(180deg, var(--accent) 0%, var(--purple) 100%);
   border-radius: 2px;
-}
-.subtitle {
-  color: var(--text-muted);
-  font-size: 14px;
-  margin-bottom: 40px;
 }
 h2 {
   font-size: 20px;
   font-weight: 650;
-  margin-top: 48px;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--border-light);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin: 32px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
 }
 h3 {
   font-size: 16px;
   font-weight: 600;
-  margin-top: 28px;
-  margin-bottom: 10px;
+  margin: 20px 0 8px;
   color: var(--text-secondary);
 }
+p { margin: 8px 0; color: var(--text-secondary); }
 .card {
   background: var(--surface);
-  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  padding: 24px 28px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 16px 0;
 }
-.card h3 { margin-top: 0; }
-ul, ol { padding-left: 20px; margin: 8px 0 16px; }
-li { margin-bottom: 6px; }
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 12px;
+.card p:first-child { margin-top: 0; }
+.card p:last-child { margin-bottom: 0; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--text-secondary); }
+li { margin: 4px 0; }
+code {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+}
+kbd {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  box-shadow: 0 1px 0 var(--border);
+}
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 14px;
   font-size: 11px;
   font-weight: 600;
   margin: 0 2px;
 }
-.badge-blue { background: var(--accent-bg); color: var(--accent); }
-.badge-green { background: var(--success-bg); color: var(--success); }
-.badge-orange { background: var(--warning-bg); color: var(--warning); }
-.badge-purple { background: var(--purple-bg); color: var(--purple); }
-.badge-red { background: var(--danger-bg); color: var(--danger); }
-code {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-family: var(--mono);
-  font-size: 13px;
-  white-space: nowrap;
-}
-.table-wrap { overflow-x: auto; margin:12px 0; }
-table { width:100%; border-collapse:collapse; font-size:13px; }
-th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; }
-th { background: var(--surface-raised); font-weight:600; font-size:12px; color: var(--text-muted); }
-tr:nth-child(even) td { background: var(--surface-raised); }
-pre {
-  background: var(--surface-raised);
-  padding: 12px;
-  border-radius: var(--radius);
-  font-family: var(--mono);
-  margin: 8px 0;
-  font-size: 13px;
-  overflow-x: auto;
-}
+.tag-new { background: var(--accent-bg); color: var(--accent); }
+.tag-pending { background: var(--warning-bg); color: var(--warning); }
+.tag-releasing { background: var(--purple-bg); color: var(--purple); }
+.tag-released { background: var(--success-bg); color: var(--success); }
 .note {
-  background: var(--accent-bg);
-  border-left: 3px solid var(--accent);
-  padding: 10px 14px;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  margin: 12px 0;
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-.warn {
   background: var(--warning-bg);
-  border-left: 3px solid var(--warning);
-  padding: 10px 14px;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #92400e;
+}
+.table-demo {
+  width: 100%;
+  border-collapse: collapse;
   margin: 12px 0;
   font-size: 13px;
-  color: var(--text-secondary);
 }
-.icon { font-size: 18px; }
-.toc a { color: var(--accent); text-decoration:none; }
-.toc a:hover { text-decoration:underline; }
-.toc li { margin-bottom:4px; }
-.toc ol { padding-left: 24px; }
+.table-demo th, .table-demo td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+}
+.table-demo th {
+  background: var(--surface-raised);
+  font-weight: 600;
+  color: var(--text);
+}
+.sep { border-top: 1px solid var(--border-light); margin: 20px 0; }
 </style>
 </head>
 <body>
 <div class="container">
 
-<h1>需求发版管理</h1>
-<p class="subtitle">本地前端工具，用于管理多项目 Git 分支发版流程 &middot; 版本 2.0</p>
+<h1>需求发版管理 - 使用说明</h1>
+<p>一个前端版本发布流程管理工具，帮助团队跟踪需求的发版状态、管理项目分支、快速跳转创建 MR。</p>
 
-<div class="card toc">
-<h3>📑 目录</h3>
-<ol class="toc">
-  <li><a href="#s1">页面顶部操作栏</a></li>
-  <li><a href="#s2">数据备份提醒弹窗</a></li>
-  <li><a href="#s3">分支同步进度条</a></li>
-  <li><a href="#s4">项目管理面板</a></li>
-  <li><a href="#s5">待发版表格</a></li>
-  <li><a href="#s6">发版中表格</a></li>
-  <li><a href="#s7">已发版表格</a></li>
-  <li><a href="#s8">上线分支填写弹窗</a></li>
-  <li><a href="#s9">确认删除弹窗</a></li>
-  <li><a href="#s10">分支备注功能</a></li>
-  <li><a href="#s11">分支查看弹窗</a></li>
-  <li><a href="#s12">键盘快捷键</a></li>
-  <li><a href="#s13">数据导出 / 导入</a></li>
-  <li><a href="#s14">本地服务器</a></li>
-  <li><a href="#s15">无 Node 环境的替代方案</a></li>
-</ol>
-</div>
-
-<!-- ======== S1 ======== -->
-<h2 id="s1"><span class="icon">🔝</span> 页面顶部操作栏</h2>
+<!-- ===== 快速开始 ===== -->
+<h2>一、快速开始</h2>
 
 <div class="card">
-<h3>搜索框 <code>🔍 搜索需求名称、链接ID或分支名…</code></h3>
-<p>支持实时过滤：输入后自动在所有需求中搜索，匹配<strong>需求名称</strong>、<strong>需求链接</strong>、<strong>涉及项目分支名</strong>、<strong>一同发版分支名</strong>。右侧 <code>×</code> 按钮清除搜索内容。</p>
-
-<h3><span class="badge badge-green">导出</span> 按钮</h3>
-<p>点击将当前所有数据（项目列表、需求列表、分支缓存、上线分支名）导出为 <code>todoList-发版需求-YYYYMMDD-HHmmss.json</code> 文件并下载到本地。</p>
-
-<h3><span class="badge badge-blue">导入</span> 按钮</h3>
-<p>点击选择之前导出的 <code>.json</code> 文件导入数据。导入后会覆盖当前全部数据并更新页面显示，同时清空编辑 / 新增中的状态。</p>
-
-<h3><span class="badge badge-orange">获取分支</span> 按钮</h3>
-<p>手动触发从本地 Git 仓库同步所有项目的最新分支列表。需要先启动 <code>node server.js</code> 本地服务器（端口 <code>1949</code>），且项目已配置<strong>本地路径</strong>。同步结果弹窗展示每个项目的分支列表，点击分支名可复制到剪贴板。</p>
-<div class="note">自动同步：页面首次打开时会自动后台同步（每天最多一次），同步期间顶部显示进度条。</div>
-
-<h3><span class="badge badge-blue">+ 新增需求</span> 按钮</h3>
-<p>在待发版表格顶部新增一行空白编辑表单，填写后保存即可创建新需求。</p>
+  <h3>文件结构</h3>
+  <table class="table-demo">
+    <tr><th style="width:180px">文件</th><th>说明</th></tr>
+    <tr><td><code>todo-release.html</code></td><td>主页面（HTML 模板）</td></tr>
+    <tr><td><code>todo-release.js</code></td><td>业务逻辑（Vue 3 组件）</td></tr>
+    <tr><td><code>todo-release.css</code></td><td>样式文件</td></tr>
+    <tr><td><code>vue.global.js</code></td><td>Vue 3 运行库</td></tr>
+    <tr><td><code>server.js</code></td><td>Node.js 本地分支服务</td></tr>
+    <tr><td><code>toDo.json</code></td><td>数据文件（可选，优先级高于 localStorage）</td></tr>
+  </table>
+  <p style="margin-top:12px">所有文件放在同一目录下，直接用浏览器打开 <code>todo-release.html</code> 即可使用。无需构建工具。</p>
 </div>
 
-<!-- ======== S2 ======== -->
-<h2 id="s2"><span class="icon">💾</span> 数据备份提醒弹窗</h2>
 <div class="card">
-<p>每天首次打开页面时自动弹出，提醒用户备份数据——因为浏览器 localStorage 可能被清理。</p>
-<ul>
-  <li><span class="badge badge-green">导出保存</span> — 执行导出操作并关闭弹窗，同时记录今日已提醒</li>
-  <li><span class="badge badge-blue">暂不保存</span> — 跳过本次备份，记录今日已提醒，今日内不再弹出</li>
-</ul>
+  <h3>数据存储优先级</h3>
+  <ol>
+    <li>同目录下的 <code>toDo.json</code>（如果存在，每次打开自动加载）</li>
+    <li>浏览器 <code>localStorage</code>（自动保存，关闭浏览器不丢失）</li>
+    <li>手动 <strong>导出/导入</strong> JSON 文件（推荐定期备份）</li>
+  </ol>
 </div>
 
-<!-- ======== S3 ======== -->
-<h2 id="s3"><span class="icon">📊</span> 分支同步进度条</h2>
+<!-- ===== 需求管理 ===== -->
+<h2>二、需求管理</h2>
+
 <div class="card">
-<p>自动后台获取分支时显示，位于顶部操作栏下方。显示当前同步进度（如 <code>3/5</code>）和进度条动画。同步完成后约 0.8 秒自动隐藏。</p>
-<p>触发条件：</p>
-<ul>
-  <li>有项目配置了<strong>本地路径</strong></li>
-  <li>本地服务器 <code>node server.js</code> 正在运行</li>
-  <li>今天尚未执行过自动同步</li>
-</ul>
+  <h3>需求状态流转</h3>
+  <p>每条需求有 4 种状态，按以下流程流转：</p>
+  <p style="text-align:center;font-size:15px;margin:12px 0">
+    <span class="tag tag-new">新建</span> &rarr;
+    <span class="tag tag-pending">待发版</span> &rarr;
+    <span class="tag tag-releasing">发版中</span> &rarr;
+    <span class="tag tag-released">已发版</span>
+  </p>
+  <ul>
+    <li><strong>新建</strong>：刚创建的需求。点击"编辑"可修改信息，"设为待发版"进入下一状态。</li>
+    <li><strong>待发版</strong>：已确认待上线的需求。点击"发版"开始发版流程，支持编辑。</li>
+    <li><strong>发版中</strong>：正在发布的需求。记录发版时间，<strong>不支持编辑</strong>。可"标记已发版"或"恢复待发版"。</li>
+    <li><strong>已发版</strong>：发版完成的需求。记录发版时间，可"恢复待发版"。</li>
+  </ul>
 </div>
 
-<!-- ======== S4 ======== -->
-<h2 id="s4"><span class="icon">🗂️</span> 项目管理面板</h2>
 <div class="card">
-<p>点击 <code>▶ 项目管理</code> 展开 / 折叠。用于维护所有项目的元信息。</p>
-
-<h3>添加项目行</h3>
-<table>
-  <tr><th>字段</th><th>说明</th></tr>
-  <tr><td><code>项目名称</code></td><td>必填，项目的唯一标识名称。后续创建需求时可从下拉选择。颜色标签按项目添加顺序自动分配（Material Design 色板）</td></tr>
-  <tr><td><code>MR 地址</code></td><td>可选，GitLab 项目的 Merge Request 基础 URL（如 <code>https://gitlab.com/group/repo</code>）。配置后标签加粗边框，可点击跳转</td></tr>
-  <tr><td><code>本地路径</code></td><td>可选，项目在本机的 Git 仓库路径。配置后可通过服务器获取该项目的最新分支</td></tr>
-  <tr><td><span class="badge badge-blue">添加</span></td><td>将项目添加到列表。重复名称会有提示</td></tr>
-</table>
-
-<h3>项目标签颜色规则</h3>
-<p>颜色按项目在列表中<strong>添加的先后顺序</strong>分配，而非随机。依次为：红 → 绿 → 蓝 → 橙 → 紫 → 青 → 黄 → 粉 → 靛 → 黄绿 → 深橙 → 浅蓝 → 棕（12 色循环）。保证了 7 个项目各不同色。</p>
-<div class="note">配置了 MR 地址的项目标签为实心色块 + 白字，否则为浅色底 + 深色字，一眼可区分。</div>
-
-<h3>项目公用上线分支名行</h3>
-<table>
-  <tr><th>字段</th><th>说明</th></tr>
-  <tr><td><code>如 master_launched</code></td><td>输入所有项目共用的上线目标分支名（全局默认值）</td></tr>
-  <tr><td><span class="badge badge-purple">保存上线分支</span></td><td>保存到 localStorage 并更新所有已渲染的分支链接。清空输入框保存可删除</td></tr>
-</table>
-
-<h3>项目标签列表</h3>
-<p>每个项目以彩色标签展示，鼠标悬停显示操作按钮：</p>
-<ul>
-  <li><span class="badge badge-blue">MR</span> — 跳转到 GitLab 项目的 Merge Request 列表页</li>
-  <li><span class="badge badge-blue">NB</span> — 跳转到 GitLab 新建分支页，分支名自动生成为 <code>master-MMDD</code>（当天月日），基于 <code>master</code> 创建</li>
-  <li><code>📁</code> — 鼠标悬停显示该项目配置的本地路径</li>
-  <li><code>✏️</code> — 编辑项目名称、MR 地址、本地路径</li>
-  <li><code>×</code> — 从列表中删除该项目</li>
-</ul>
-<div class="warn">注意：删除项目不会影响已有需求中已关联的该项目记录，但会从下拉列表中移除。</div>
+  <h3>新增/编辑需求</h3>
+  <ol>
+    <li>点击 <strong>"+ 新增需求"</strong> 按钮，在表格顶部出现编辑行。</li>
+    <li>填写<strong>需求名称</strong>（必填）和<strong>需求链接</strong>（可选）。</li>
+    <li>添加<strong>涉及项目及分支名</strong>：选择项目名、填写分支名。可添加多行，使用 📂 按钮查看该项目所有分支。</li>
+    <li>添加<strong>一同发版分支</strong>：填写依赖的同步分支信息（如第三方组件分支）。只有分支名非空时才会保存。</li>
+    <li>每个分支行可添加<strong>备注</strong>（📝），记录 SQL 脚本、DDL 变更、注意事项等。</li>
+    <li>点击"保存"完成新增。新增的需求会以高亮动画显示。</li>
+  </ol>
+  <p>点击单条需求的<strong>"编辑"</strong>按钮可修改已有需求（仅在新建/待发版状态下可编辑）。</p>
 </div>
 
-<!-- ======== S5 ======== -->
-<h2 id="s5"><span class="icon">⏳</span> 待发版表格</h2>
 <div class="card">
-<p>展示所有状态为<span class="badge badge-blue">新建</span>和<span class="badge badge-orange">待发版</span>的需求，<strong>默认展开</strong>。</p>
-
-<h3>表格列</h3>
-<table>
-  <tr><th>列名</th><th>说明</th></tr>
-  <tr><td>需求名称</td><td>粗体显示需求名</td></tr>
-  <tr><td>状态</td><td><span class="badge badge-blue">新建</span> 或 <span class="badge badge-orange">待发版</span></td></tr>
-  <tr><td>需求链接</td><td>可点击跳转到需求详情页，超长 URL 自动截断显示</td></tr>
-  <tr><td>涉及项目及分支名</td><td>
-    彩色<span class="badge badge-blue">项目名</span>标签 + 绿色<span class="badge badge-green">分支名</span>标签 +
-    <code>📋</code> 复制按钮 + <code>📝</code> <a href="#s10">备注按钮</a>（仅当有备注时显示，橙色可点击查看）。<br>
-    分支名过长自动截断为 40 字符，悬停显示完整名称。<br>
-    有 MR 地址的项目：<strong>点击分支名</strong> → 复制分支名 + 跳转到 GitLab 创建 MR 页。<br>
-    无 MR 地址的项目：点击分支名仅复制。
-  </td></tr>
-  <tr><td>一同发版分支</td><td>与涉及项目类似，同样支持备注按钮。目标分支优先使用本条目的自定义上线分支</td></tr>
-  <tr><td>操作</td><td>
-    <span class="badge badge-blue">编辑</span> <span class="badge badge-orange">设为待发版</span> <span class="badge badge-purple">发版</span> <span class="badge">回退新建</span> <span class="badge badge-red">删</span>
-  </td></tr>
-</table>
-
-<h3>操作按钮说明</h3>
-<ul>
-  <li><span class="badge badge-blue">编辑</span> — 该行切换为编辑模式，可修改需求名称、链接、项目分支、一同发版分支、分支备注</li>
-  <li><span class="badge badge-orange">设为待发版</span> — 将新建需求转为待发版状态</li>
-  <li><span class="badge badge-purple">发版</span> — 将需求转为发版中状态。<strong>若未设置公用上线分支名</strong>，弹出"填写各项目上线目标分支"弹窗</li>
-  <li><span class="badge">回退新建</span> — 将待发版需求退回新建状态</li>
-  <li><span class="badge badge-red">删</span> — 确认后删除该需求</li>
-</ul>
-
-<h3>编辑模式下新增的按钮</h3>
-<ul>
-  <li><code>📂</code> — 查看该项目所有分支，点击分支名自动填充到输入框</li>
-  <li><code>📝</code> — 编辑该分支的备注（弹窗中输入，支持 SQL / DDL / 注意事项等）</li>
-  <li><code>×</code> — 移除该项目行</li>
-  <li><code>+ 添加分支</code> / <code>+ 添加一同发版分支</code> — 新增一行</li>
-</ul>
+  <h3>搜索与过滤</h3>
+  <p>顶部搜索框支持按以下内容实时过滤：</p>
+  <ul>
+    <li>需求名称</li>
+    <li>需求链接</li>
+    <li>分支名称</li>
+  </ul>
+  <p>点击搜索框右侧 ✕ 按钮或按 <kbd>Escape</kbd> 清除搜索。</p>
 </div>
 
-<!-- ======== S6 ======== -->
-<h2 id="s6"><span class="icon">🚀</span> 发版中表格</h2>
+<!-- ===== 发版流程 ===== -->
+<h2>三、发版流程</h2>
+
 <div class="card">
-<p>展示所有<span class="badge badge-purple">发版中</span>的需求。<strong>有数据时自动展开</strong>。</p>
-
-<h3>表头右侧 <span class="badge badge-purple">全部发版</span> 按钮</h3>
-<p>仅在发版中有数据时显示，点击一键将所有发版中的需求标记为已发版并记录当前时间。</p>
-
-<h3>项目摘要</h3>
-<p>表头右侧以彩色标签汇总展示当前所有发版中需求涉及的<strong>去重项目</strong>。有 MR 地址的项目可点击跳转 GitLab — <strong>源分支取各需求的上线分支名，目标分支为 <code>master</code></strong>。</p>
-
-<h3>分支名点击目标分支优先级</h3>
-<ol>
-  <li>待发版表格始终为 <code>uat</code></li>
-  <li>发版中表格：公用上线分支 &gt; 本条目的自定义目标分支（<code>targetBranches</code>）&gt; 无</li>
-  <li>若均未设置，<code>buildMrUrl</code> 最终兜底为 <code>master_launched</code></li>
-</ol>
-
-<h3>操作按钮</h3>
-<ul>
-  <li><span class="badge badge-green">标记已发版</span> — 将需求转为已发版，更新发版时间</li>
-  <li><span class="badge badge-orange">恢复待发版</span> — 将需求退回到待发版，清除发版时间</li>
-  <li><span class="badge badge-red">删</span> — 确认后删除</li>
-</ul>
-<div class="note">发版中和已发版不支持编辑，但分支备注仍可查看。</div>
+  <h3>单条发版</h3>
+  <ol>
+    <li>确认需求处于 <span class="tag tag-pending">待发版</span> 状态。</li>
+    <li>点击"发版"按钮。</li>
+    <li><strong>如果已设置全局上线分支</strong>：直接转入发版中。</li>
+    <li><strong>如果未设置全局上线分支</strong>：弹出窗口，为每个涉及的项目填写目标分支名（即要合并到 master 的上线分支）。</li>
+    <li>填写完成后点"确认发版"，需求状态变为 <span class="tag tag-releasing">发版中</span>。</li>
+  </ol>
+  <p class="note">目标分支会保存在该需求上，后续发版中的项目按钮会据此生成正确的 MR 链接。</p>
 </div>
 
-<!-- ======== S7 ======== -->
-<h2 id="s7"><span class="icon">✅</span> 已发版表格</h2>
 <div class="card">
-<p>展示所有<span class="badge badge-green">已发版</span>的需求。</p>
-
-<h3>额外列</h3>
-<p>相比前两个表格多了<strong>发版时间</strong>列，显示格式为 <code>YYYY-MM-DD HH:mm:ss</code>。</p>
-
-<h3>操作按钮</h3>
-<ul>
-  <li><span class="badge badge-orange">恢复待发版</span> — 退回待发版状态</li>
-  <li><span class="badge badge-red">删</span> — 确认后删除</li>
-</ul>
+  <h3>发版中的项目 MR</h3>
+  <p>在 <strong>"发版中"</strong> 分组的表头右侧，会显示当前发版涉及的项目按钮：</p>
+  <ul>
+    <li>点击项目按钮，直接跳转创建 MR（源: 上线分支 → 目标: master）。</li>
+    <li>源分支的确定顺序：<strong>全局上线分支</strong> &gt; <strong>发版时填写的项目目标分支</strong> &gt; <code>master_launched</code>。</li>
+  </ul>
 </div>
 
-<!-- ======== S8 ======== -->
-<h2 id="s8"><span class="icon">📝</span> 上线分支填写弹窗</h2>
 <div class="card">
-<p>在<strong>未设置公用上线分支名</strong>时点击发版触发。列出当前需求涉及的所有项目，每行包含：</p>
-<ul>
-  <li>彩色<span class="badge badge-blue">项目名</span>标签</li>
-  <li><code>→</code> 箭头</li>
-  <li>目标分支输入框（默认为空，需手动填写，按 <code>Enter</code> 快速确认）</li>
-</ul>
-
-<h3>智能跳过</h3>
-<p>若发版中已有其他条目的同一项目填写过目标分支，该弹窗<strong>自动跳过</strong>该项目。全部跳过则直接流转到发版中，不弹窗。</p>
-
-<h3>确认发版</h3>
-<ul>
-  <li>所有输入框必填，空框标红提示</li>
-  <li>确认后每条需求保存 <code>targetBranches = { "项目A": "uat", "项目B": "release" }</code></li>
-  <li>同时合并其他发版中已有的目标分支</li>
-</ul>
-
-<h3>交互</h3>
-<ul>
-  <li>按 <code>Esc</code> 关闭</li>
-  <li>点击遮罩黑色区域关闭</li>
-  <li>点击<span class="badge">取消</span>关闭并取消本次发版操作</li>
-</ul>
+  <h3>全部发版</h3>
+  <ul>
+    <li>发版中的需求列表旁有<strong>"全部发版"</strong>按钮，点击将所有发版中的需求标记为已发版。</li>
+    <li>已发版的需求自动记录发版完成时间。</li>
+  </ul>
 </div>
 
-<!-- ======== S9 ======== -->
-<h2 id="s9"><span class="icon">⚠️</span> 确认删除弹窗</h2>
 <div class="card">
-<p>点击<span class="badge badge-red">删</span>按钮时弹出，显示被删除的需求名称。</p>
-<ul>
-  <li><span class="badge badge-red">确定删除</span> — 执行删除，从 <code>items</code> 数组中移除，刷新页面</li>
-  <li><span class="badge">取消</span> 或按 <code>Esc</code> 或点击遮罩 — 放弃删除</li>
-</ul>
+  <h3>分支点击 MR 跳转</h3>
+  <p>在需求列表中，点击分支名会自动<strong>复制分支名</strong>到剪贴板。如果该项目配置了 MR 地址，还会在新标签页打开 MR 创建页面：</p>
+  <table class="table-demo">
+    <tr><th style="width:100px">需求状态</th><th>MR 目标分支</th></tr>
+    <tr><td><span class="tag tag-new">新建</span></td><td><code>test</code></td></tr>
+    <tr><td><span class="tag tag-pending">待发版</span></td><td><code>uat</code></td></tr>
+    <tr><td><span class="tag tag-releasing">发版中</span></td><td>全局上线分支 &gt; 项目目标分支 &gt; null</td></tr>
+    <tr><td><span class="tag tag-released">已发版</span></td><td>全局上线分支 &gt; 项目目标分支 &gt; null</td></tr>
+  </table>
 </div>
 
-<!-- ======== S10 ======== -->
-<h2 id="s10"><span class="icon">📝</span> 分支备注功能</h2>
+<!-- ===== 项目管理 ===== -->
+<h2>四、项目管理</h2>
+
 <div class="card">
-<p>为每个分支维护备注信息（如 SQL 脚本、DDL 变更、注意事项等），方便后端发版时参考。</p>
-
-<h3>查看模式（非编辑状态）</h3>
-<ul>
-  <li><strong>有备注</strong>：分支名旁显示橙色 <code>📝</code> 图标，点击弹出只读弹窗查看备注内容</li>
-  <li><strong>无备注</strong>：不显示任何图标，保持界面简洁</li>
-  <li>弹窗中显示项目名和分支名，textarea 为只读，底部仅有关闭按钮</li>
-</ul>
-
-<h3>编辑模式</h3>
-<ul>
-  <li>每个项目分支行都有 <code>📝</code> 可编辑按钮，始终显示</li>
-  <li>有备注时按钮高亮橙色，无备注时灰色</li>
-  <li>点击弹出可编辑弹窗，输入备注后保存</li>
-  <li>备注随需求数据一起保存到 localStorage 和导出 JSON 中</li>
-</ul>
-
-<h3>弹窗交互</h3>
-<ul>
-  <li>支持 <code>Esc</code> 关闭、点击遮罩关闭</li>
-  <li>保存后自动刷新列表并 toast 提示</li>
-  <li>数据结构：<code>{ name, branch, notes }</code></li>
-</ul>
-
-<h3>数据兼容</h3>
-<p>旧数据（无 <code>notes</code> 字段）完全兼容，会自动降级为无备注状态。</p>
+  <h3>展开/折叠</h3>
+  <p>点击 <strong>"项目管理"</strong> 区域可展开或折叠项目配置面板。</p>
 </div>
 
-<!-- ======== S11 ======== -->
-<h2 id="s11"><span class="icon">📂</span> 分支查看弹窗</h2>
 <div class="card">
-<p>两种入口：</p>
-<ol>
-  <li>点击顶部<span class="badge badge-orange">获取分支</span>按钮 — 展示所有配置了本地路径的项目分支</li>
-  <li>编辑模式下点击 <code>📂</code> 按钮 — 仅展示对应项目的分支，点击分支名自动填充到输入框</li>
-</ol>
-
-<h3>弹窗内容</h3>
-<ul>
-  <li>项目名 + 分支数量 + 搜索框（支持实时过滤分支）</li>
-  <li>分支列表：分支名（蓝色可点击）+ 最近提交日期 + 提交者</li>
-  <li>点击分支名：编辑模式下填充到输入框并 toast 提示；全局查看模式下复制到剪贴板</li>
-  <li>已发版的项目分支会标灰并标记"已发版"</li>
-</ul>
-
-<h3>数据来源</h3>
-<ul>
-  <li><strong>缓存优先</strong>：如果 <code>branchesCache</code> 中已有该项目数据，直接展示</li>
-  <li><strong>实时获取</strong>：缓存不存在时请求 <code>http://localhost:1949/api/branches</code>，结果自动存入缓存</li>
-</ul>
-<div class="warn">分支数据已过滤：不显示 <code>origin</code>、<code>origin/</code> 开头的远程引用，以及 master / test / dev / main / release / staging / hotfix / uat 等公共分支。</div>
+  <h3>添加项目</h3>
+  <p>在项目管理区域底部填写：</p>
+  <ul>
+    <li><strong>项目名称</strong>（必填）</li>
+    <li><strong>MR 地址</strong>（可选，填写 GitLab 项目根地址或 MR 页面地址，用于自动生成 MR 链接）</li>
+    <li><strong>本地路径</strong>（可选，填写项目在本机的绝对路径，用于获取分支列表）</li>
+  </ul>
+  <p>按 <kbd>Enter</kbd> 或点击"添加"按钮。添加后项目会出现在标签列表中。</p>
 </div>
 
-<!-- ======== S12 ======== -->
-<h2 id="s12"><span class="icon">⌨️</span> 键盘快捷键</h2>
 <div class="card">
-<table>
-  <tr><th>快捷键</th><th>功能</th></tr>
-  <tr><td><code>Ctrl + N</code></td><td>新增需求（同点击 + 新增需求）</td></tr>
-  <tr><td><code>Ctrl + F</code></td><td>聚焦搜索框</td></tr>
-  <tr><td><code>Esc</code></td><td>关闭当前弹窗（备注 / 确认 / 上线分支）/ 清除搜索</td></tr>
-</table>
+  <h3>编辑/删除项目</h3>
+  <p>每个项目标签右侧有 ✏️（编辑）和 ×（删除）按钮：</p>
+  <ul>
+    <li>点击 ✏️ 进入编辑模式，修改后点"保存"。</li>
+    <li>点击 × 直接删除该项目。</li>
+  </ul>
 </div>
 
-<!-- ======== S13 ======== -->
-<h2 id="s13"><span class="icon">💿</span> 数据导出 / 导入</h2>
 <div class="card">
-<h3>导出格式</h3>
-<p>JSON 文件，包含以下字段：</p>
-<table>
-  <tr><th>字段</th><th>内容</th></tr>
-  <tr><td><code>projectNames</code></td><td>项目列表 <code>[{name, mr, localPath}]</code></td></tr>
-  <tr><td><code>items</code></td><td>需求列表 <code>[{id, name, link, status, projects, syncBranches, releaseTime, targetBranches}]</code>，其中 <code>projects</code> 和 <code>syncBranches</code> 每项含 <code>{name/ project, branch, notes}</code></td></tr>
-  <tr><td><code>branchesCache</code></td><td>分支缓存 <code>{项目名: {branches:[], timestamp}}</code></td></tr>
-  <tr><td><code>launchBranch</code></td><td>公用上线分支名</td></tr>
-</table>
-
-<h3>导入行为</h3>
-<ul>
-  <li>完全覆盖当前数据（项目、需求、缓存、上线分支）</li>
-  <li>同步写入 localStorage</li>
-  <li>清理编辑 / 新增中的状态（<code>editingIds</code>、<code>addingItems</code>）</li>
-  <li>更新项目管理面板和上线分支输入框</li>
-  <li>重新渲染所有表格</li>
-</ul>
-
-<h3>自动加载</h3>
-<p>页面初始化时优先加载同目录下的 <code>toDo.json</code> 文件（如存在），否则从 localStorage 加载。</p>
+  <h3>项目快捷操作</h3>
+  <p>每个项目标签旁的功能按钮：</p>
+  <table class="table-demo">
+    <tr><th>按钮</th><th>功能</th></tr>
+    <tr><td><strong>MR</strong></td><td>跳转到项目的 Merge Request 列表页</td></tr>
+    <tr><td><strong>NB</strong></td><td>跳转到新建分支页面（分支名自动为 <code>master_MMDD</code>，基于 master）</td></tr>
+    <tr><td>📁</td><td>显示该项目配置的本地路径（鼠标悬停查看）</td></tr>
+  </table>
 </div>
 
-<!-- ======== S14 ======== -->
-<h2 id="s14"><span class="icon">🖥️</span> 本地服务器 <code>node server.js</code></h2>
 <div class="card">
-<p>获取分支功能依赖本地 HTTP 服务器（端口 <code>1949</code>），用于在浏览器中调用 <code>git for-each-ref</code> 命令。</p>
-
-<h3>启动方式</h3>
-<pre>cd d:\发版小助手
-node server.js</pre>
-
-<h3>核心 API</h3>
-<table>
-  <tr><th>路径</th><th>说明</th></tr>
-  <tr><td><code>GET /api/git-user</code></td><td>获取当前 Git 用户名，用于分支过滤</td></tr>
-  <tr><td><code>GET /api/branches?path=&lt;路径&gt;&amp;user=&lt;用户名&gt;</code></td><td>获取指定仓库的分支列表</td></tr>
-</table>
-
-<h3>分支过滤逻辑</h3>
-<ol>
-  <li>使用 <code>git for-each-ref refs/remotes/origin/ refs/heads/ --sort=-authordate --count=300</code> 一次性获取</li>
-  <li>过滤公共分支：master、test、dev、main、release、staging、hotfix、uat</li>
-  <li>过滤 <code>origin</code> 和 <code>origin/</code> 远程引用</li>
-  <li>过滤超过 1 个月的旧分支</li>
-  <li>同名分支去重（保留最新的）</li>
-</ol>
-<div class="warn">如果启动失败，请确保已安装 Node.js 且项目路径下有 <code>.git</code> 目录。</div>
+  <h3>项目公用上线分支名</h3>
+  <p>在项目管理区域底部设置全局上线分支名（如 <code>master_launched</code>），用于：</p>
+  <ul>
+    <li>发版中的项目按钮生成 MR（源: 此分支 → 目标: master）</li>
+    <li>分支点击跳转 MR 时的目标分支回退值</li>
+  </ul>
+  <p>按 <kbd>Enter</kbd> 或点击"保存上线分支"。</p>
 </div>
 
-<!-- ======== S15 ======== -->
-<h2 id="s15"><span class="icon">🖥️</span> 无 Node 环境的替代方案</h2>
 <div class="card">
-<p>如果无法安装 Node.js 或不方便启动本地服务器，以下功能仍可<strong>正常使用</strong>，只是缺少部分自动化能力。</p>
-
-<h3>完全可用的功能</h3>
-<ul>
-  <li>需求管理：新建、编辑、删除、状态流转（新建 → 待发版 → 发版中 → 已发版）</li>
-  <li>项目管理：维护项目名称、MR 地址、本地路径</li>
-  <li>分支备注：为每个分支添加 SQL、DDL 等备注信息，支持查看和编辑</li>
-  <li>MR 链接跳转：点击项目名 / 分支名跳转到 GitLab 创建 MR 页面（目标分支自动填充）</li>
-  <li>NB 按钮：跳转到 GitLab 新建分支页，分支名自动生成为 <code>master-MMDD</code></li>
-  <li>数据导出 / 导入：导出 JSON 文件备份，导入恢复</li>
-  <li>搜索过滤：搜索需求名称、链接、分支名</li>
-  <li>公用上线分支名：全局设置和保存</li>
-  <li>上线分支填写弹窗：按项目自定义目标分支</li>
-</ul>
-
-<h3>受影响的功能</h3>
-<table>
-  <tr><th>功能</th><th>影响</th><th>替代方案</th></tr>
-  <tr>
-    <td><span class="badge badge-orange">获取分支</span></td>
-    <td>按钮点击后提示"请先启动服务器"</td>
-    <td>手动从 GitLab 网页查看分支，复制后粘贴到输入框</td>
-  </tr>
-  <tr>
-    <td>自动后台同步分支</td>
-    <td>不执行，不会显示进度条</td>
-    <td>无影响，仅不自动缓存分支列表</td>
-  </tr>
-  <tr>
-    <td>编辑模式 <code>📂</code> 查看分支</td>
-    <td>提示"该项目未配置本地路径"或"请先启动服务器"</td>
-    <td>手动输入分支名或使用导出的数据中已缓存的分支</td>
-  </tr>
-</table>
-
-<h3>分支名的手动处理方式</h3>
-<p>在编辑模式下，直接在分支名输入框中<strong>手动输入</strong>分支名即可。输入框支持：</p>
-<ul>
-  <li>直接打字输入任意分支名</li>
-  <li>空格自动被过滤，保持分支名无空格</li>
-  <li>鼠标悬停在输入框上可看到已输入的内容</li>
-</ul>
-
-<h3>关于分支缓存</h3>
-<p>如果之前使用过 Node 服务器获取过分支，数据已缓存在浏览器 localStorage 中。导入带有 <code>branchesCache</code> 的导出文件后，之前缓存的分支列表仍可查看（<code>📂</code> 按钮可用）。</p>
-<div class="note">总结：没有 Node 环境的唯一实际影响是无法<strong>自动</strong>获取 Git 分支列表。所有其他核心功能完全独立运行，不受影响。</div>
+  <h3>项目下拉选择</h3>
+  <p>在新增/编辑需求时，输入项目名会自动弹出已维护的项目下拉列表：</p>
+  <ul>
+    <li>输入文字实时过滤匹配项目</li>
+    <li>点击选项或上下键 + Enter 选择</li>
+    <li>失去焦点后自动关闭</li>
+  </ul>
 </div>
+
+<!-- ===== 分支管理 ===== -->
+<h2>五、分支管理</h2>
+
+<div class="note">
+  <strong>前置条件：</strong>需要启动本地 Node.js 分支查询服务。
+  <ol>
+    <li>项目必须在"项目管理"中配置了<strong>本地路径</strong></li>
+    <li>在终端执行 <code>node server.js</code> 启动服务（端口 1949）</li>
+    <li>服务启动后会向 GitLab API 请求当前用户的用户名，用于过滤个人分支</li>
+  </ol>
+</div>
+
+<div class="card">
+  <h3>单项目分支查看</h3>
+  <p>在新增/编辑需求的每个分支行，点击 📂 按钮：</p>
+  <ul>
+    <li>查看该项目所有远程分支（过滤掉 origin/ 开头）</li>
+    <li>在弹窗中搜索过滤分支名</li>
+    <li>点击分支名自动填充到当前分支输入框</li>
+    <li>已被发版过的分支会以灰色标识（<code>released-branch</code>）</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>全部项目分支</h3>
+  <p>点击顶部 <strong>"获取分支"</strong> 按钮：</p>
+  <ul>
+    <li>为所有配置了本地路径的项目获取最近分支列表</li>
+    <li>结果以弹窗展示，按项目分组</li>
+    <li>支持全局搜索过滤</li>
+    <li>点击分支名直接复制到剪贴板</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>分支缓存</h3>
+  <ul>
+    <li>获取分支后自动缓存到 <code>localStorage</code>，下次打开直接使用缓存</li>
+    <li>每天首次打开页面时，<strong>自动后台静默刷新</strong>全部分支（当天已刷新则跳过）</li>
+    <li>顶部有进度条显示刷新状态</li>
+  </ul>
+</div>
+
+<!-- ===== 备注功能 ===== -->
+<h2>六、备注功能</h2>
+
+<div class="card">
+  <h3>为分支添加备注</h3>
+  <ul>
+    <li>在<strong>编辑模式</strong>下，每个分支行有 📝 按钮，点击打开备注编辑弹窗。</li>
+    <li>备注内容可记录 SQL 脚本、DDL 变更、注意事项等。</li>
+    <li>有备注的分支行 📝 按钮会高亮显示（<code>has-notes</code> 样式）。</li>
+    <li>在<strong>查看模式</strong>下，如果有备注则显示 📝 按钮，点击可查看但不可编辑。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>右键菜单</h3>
+  <p>在<strong>待发版</strong>和<strong>新建</strong>需求的分支行上点击右键：</p>
+  <ul>
+    <li>📝 添加/编辑备注</li>
+    <li>🗑️ 清除备注（仅当已有备注时显示）</li>
+  </ul>
+</div>
+
+<!-- ===== 导入导出 ===== -->
+<h2>七、导入导出</h2>
+
+<div class="card">
+  <h3>导出</h3>
+  <ul>
+    <li>点击顶部 <strong>"导出"</strong> 按钮。</li>
+    <li>生成 JSON 文件：<code>todoList-发版需求-时间戳.json</code></li>
+    <li>包含完整数据：项目列表、需求列表、分支缓存、上线分支设置。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>导入</h3>
+  <ul>
+    <li>点击顶部 <strong>"导入"</strong> 按钮，选择之前导出的 JSON 文件。</li>
+    <li>导入会<strong>覆盖</strong>当前所有数据并自动保存。</li>
+    <li>导入后自动清除编辑状态和新增行。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>每日备份提醒</h3>
+  <p>每天首次打开页面时，弹出备份提醒窗口：</p>
+  <ul>
+    <li>"导出保存" — 自动导出 JSON 文件并关闭提醒</li>
+    <li>"暂不保存" — 关闭提醒（下次打开不再弹出当天）</li>
+  </ul>
+</div>
+
+<!-- ===== 键盘快捷键 ===== -->
+<h2>八、键盘快捷键</h2>
+
+<div class="card">
+  <table class="table-demo">
+    <tr><th style="width:120px">快捷键</th><th>功能</th></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>N</kbd></td><td>新增需求</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>F</kbd></td><td>聚焦搜索框</td></tr>
+    <tr><td><kbd>Escape</kbd></td><td>关闭所有弹窗 / 清除搜索 / 关闭右键菜单</td></tr>
+  </table>
+</div>
+
+<div class="sep"></div>
+<p style="color:var(--text-muted);font-size:13px;text-align:center">需求发版管理工具 · 基于 Vue 3 · 纯静态无需构建</p>
 
 </div>
 </body>

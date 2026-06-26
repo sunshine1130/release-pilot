@@ -1,3484 +1,384 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>需求发版管理</title>
-<style>
-/* ===== Variables ===== */
-:root {
-  --bg: #f5f7fa;
-  --bg-gradient: linear-gradient(180deg, #fafbfc 0%, #f0f2f5 100%);
-  --surface: #ffffff;
-  --surface-raised: #fafbfc;
-  --surface-hover: #f8f9fc;
-  --border: #e5e7eb;
-  --border-light: #f0f1f3;
-  --border-focus: #2563eb;
-  --text: #1f2937;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
-  --text-disabled: #d1d5db;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-light: #dbeafe;
-  --accent-bg: rgba(37,99,235,0.08);
-  --accent-glow: rgba(37,99,235,0.15);
-  --success: #10b981;
-  --success-hover: #059669;
-  --success-bg: rgba(16,185,129,0.08);
-  --success-light: #d1fae5;
-  --warning: #f59e0b;
-  --warning-bg: rgba(245,158,11,0.08);
-  --warning-light: #fef3c7;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
-  --danger-bg: rgba(239,68,68,0.08);
-  --danger-light: #fee2e2;
-  --purple: #8b5cf6;
-  --purple-bg: rgba(139,92,246,0.08);
-  --purple-light: #ede9fe;
-  --cyan: #06b6d4;
-  --cyan-bg: rgba(6,182,212,0.08);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
-  --shadow: 0 2px 6px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.03);
-  --shadow-lg: 0 4px 12px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.04);
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
-  --mono: 'SF Mono','JetBrains Mono','Cascadia Code','Fira Code',Consolas,monospace;
-  --radius: 10px;
-  --radius-sm: 6px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --transition-fast: 0.15s cubic-bezier(0.4,0,0.2,1);
-  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
-  --transition-slow: 0.3s cubic-bezier(0.4,0,0.2,1);
-  --spacing-xs: 3px;
-  --spacing-sm: 6px;
-  --spacing-md: 12px;
-  --spacing-lg: 18px;
-  --spacing-xl: 24px;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  padding: 0;
-  min-height: 100vh;
-  color: var(--text);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
-}
-
-/* ===== Header ===== */
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-lg);
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-}
-.page-title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-.page-title::before {
-  content: '';
-  width: 4px;
-  height: 22px;
-  background: linear-gradient(180deg, var(--accent) 0%, var(--purple) 100%);
-  border-radius: 2px;
-}
-.page-title .sub {
-  font-weight: 400;
-  color: var(--text-muted);
-  font-size: 13px;
-  margin-left: 4px;
-  padding: 2px 8px;
-  background: var(--surface-raised);
-  border-radius: 12px;
-}
-.header-actions {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-}
-
-/* ===== Search bar ===== */
-.search-wrap {
-  position: relative;
-  flex-shrink: 0;
-}
-.help-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1.5px solid var(--text-muted);
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-}
-.help-icon:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-.search-wrap input {
-  padding-left: 36px !important;
-  width: 260px;
-  height: 32px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 13px;
-  transition: all var(--transition);
-  background: var(--surface);
-}
-.search-wrap input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-.search-wrap input::placeholder {
-  color: var(--text-muted);
-}
-.search-wrap .search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  font-size: 15px;
-  pointer-events: none;
-}
-.search-clear {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  color: var(--text-muted);
-  font-size: 12px;
-  padding: 3px 6px;
-  border-radius: var(--radius-sm);
-  display: none;
-  transition: all var(--transition-fast);
-}
-.search-clear:hover {
-  color: var(--text);
-  background: var(--danger-bg);
-  border-color: var(--danger);
-}
-
-/* ===== Buttons ===== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  border: none;
-  border-radius: var(--radius);
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 550;
-  cursor: pointer;
-  transition: all var(--transition);
-  line-height: 1.4;
-  white-space: nowrap;
-  outline: none;
-  letter-spacing: 0.01em;
-  position: relative;
-  overflow: hidden;
-}
-.btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-  pointer-events: none;
-}
-.btn:focus-visible {
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #1d4ed8 100%);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, var(--accent-hover) 0%, #1e40af 100%);
-  box-shadow: 0 4px 14px rgba(37,99,235,0.35);
-  transform: translateY(-1px);
-}
-.btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(37,99,235,0.2);
-}
-.btn-outline {
-  background: var(--surface);
-  color: var(--text-secondary);
-  border: 1.5px solid var(--border);
-}
-.btn-outline:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-bg);
-  box-shadow: 0 0 0 2px var(--accent-glow);
-}
-.btn-outline.active {
-  background: var(--accent-bg);
-  color: var(--accent);
-  border-color: var(--accent);
-}
-.btn-success {
-  background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(16,185,129,0.25);
-}
-.btn-success:hover {
-  background: linear-gradient(135deg, var(--success-hover) 0%, #047857 100%);
-  box-shadow: 0 4px 14px rgba(16,185,129,0.35);
-  transform: translateY(-1px);
-}
-.btn-danger {
-  background: var(--surface);
-  color: var(--danger);
-  border: 1.5px solid var(--danger);
-}
-.btn-danger:hover {
-  background: var(--danger);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(239,68,68,0.25);
-}
-.btn-warning {
-  background: var(--surface);
-  color: #f59e0b;
-  border: 1.5px solid #f59e0b;
-}
-.btn-warning:hover {
-  background: #f59e0b;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(245,158,11,0.25);
-}
-.btn-info {
-  background: var(--surface);
-  color: var(--accent);
-  border: 1.5px solid var(--accent);
-}
-.btn-info:hover {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
-}
-.btn-secondary {
-  background: var(--surface);
-  color: var(--text-muted);
-  border: 1.5px solid var(--border);
-}
-.btn-secondary:hover {
-  background: var(--surface-raised);
-  color: var(--text);
-  border-color: var(--text-muted);
-}
-.btn-purple {
-  background: var(--purple);
-  color: #fff;
-  border: 1.5px solid var(--purple);
-}
-.btn-purple:hover {
-  background: #7c3aed;
-  border-color: #7c3aed;
-  box-shadow: 0 2px 8px rgba(139,92,246,0.25);
-}
-.btn-ghost {
-  background: none;
-  color: var(--text-muted);
-  border: none;
-  padding: 4px 10px;
-}
-.btn-ghost:hover {
-  color: var(--text);
-  background: var(--surface-raised);
-}
-.btn-xs {
-  padding: 2px 8px;
-  font-size: 11px;
-  border-radius: var(--radius-sm);
-  font-weight: 550;
-}
-.btn-sm {
-  padding: 5px 12px;
-  font-size: 12px;
-  border-radius: var(--radius-sm);
-}
-
-/* ===== Section ===== */
-.section {
-  margin-bottom: var(--spacing-lg);
-}
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-}
-.section-header .collapse-header {
-  flex: 0 1 auto;
-}
-.section-header h2 {
-  font-size: 14px;
-  font-weight: 650;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-.section-header .count {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 500;
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  padding: 2px 8px;
-  border-radius: 12px;
-  transition: all var(--transition-fast);
-}
-.section-header .count:hover {
-  background: var(--accent-bg);
-  color: var(--accent);
-  border-color: var(--accent);
-}
-.section-header .count-pending {
-  background: #fef3c7;
-  color: #d97706;
-  border-color: #f59e0b;
-}
-.section-header .count-pending:hover {
-  background: #fde68a;
-  color: #b45309;
-}
-.section-header .count-releasing {
-  background: #ede9fe;
-  color: #7c3aed;
-  border-color: #8b5cf6;
-}
-.section-header .count-releasing:hover {
-  background: #ddd6fe;
-  color: #6d28d9;
-}
-.section-header .count-released {
-  background: #d1fae5;
-  color: #059669;
-  border-color: #10b981;
-}
-.section-header .count-released:hover {
-  background: #a7f3d0;
-  color: #047857;
-}
-
-/* ===== Card ===== */
-.card {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  transition: all var(--transition);
-}
-.card:hover {
-  box-shadow: var(--shadow);
-}
-.card-body {
-  padding: var(--spacing-sm);
-}
-.card-body-flush {
-  padding: 0;
-}
-
-/* ===== Table ===== */
-.table-wrap {
-  overflow-x: auto;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-variant-numeric: tabular-nums;
-}
-th, td {
-  padding: 8px 12px;
-  text-align: left;
-  font-size: 13px;
-  vertical-align: top;
-}
-th {
-  background: linear-gradient(180deg, var(--surface-raised) 0%, var(--surface) 100%);
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  white-space: nowrap;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  position: relative;
-}
-
-td {
-  word-break: break-word;
-  border-bottom: 1px solid var(--border-light);
-}
-tr:last-child td {
-  border-bottom: none;
-}
-tbody tr {
-  transition: all var(--transition);
-}
-tbody tr:hover {
-  background: var(--surface-hover);
-  transform: scale(1.002);
-}
-tbody tr:hover td {
-  background: transparent;
-}
-tr.edit-row {
-  background: var(--accent-bg);
-}
-tr.edit-row td {
-  background: var(--accent-bg) !important;
-}
-@keyframes rowIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-tr.row-fresh {
-  animation: rowIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-@keyframes highlight {
-  0% {
-    background: var(--success-light) !important;
-  }
-  100% {
-    background: transparent;
-  }
-}
-tr.row-highlight td {
-  animation: highlight 1.4s ease-out;
-}
-
-/* ===== Inputs ===== */
-input, select {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 5px 10px;
-  font-size: 13px;
-  outline: none;
-  transition: all var(--transition);
-  background: var(--surface);
-  color: var(--text);
-  font-family: inherit;
-}
-input::placeholder, select::placeholder {
-  color: var(--text-muted);
-}
-input:focus, select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-input:hover, select:hover {
-  border-color: var(--text-muted);
-}
-input.inline-input {
-  width: 100%;
-  margin-bottom: 4px;
-}
-
-/* ===== Status tags ===== */
-.status-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 14px;
-  font-size: 11px;
-  font-weight: 600;
-  margin: 0;
-  letter-spacing: .01em;
-  white-space: nowrap;
-  transition: all var(--transition-fast);
-  cursor: default;
-}
-.status-tag:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.status-new {
-  background: var(--accent-bg);
-  color: var(--accent);
-  border: 1px solid rgba(37,99,235,0.2);
-}
-.status-pending {
-  background: var(--warning-bg);
-  color: var(--warning);
-  border: 1px solid rgba(245,158,11,0.2);
-}
-.status-releasing {
-  background: var(--purple-bg);
-  color: var(--purple);
-  border: 1px solid rgba(139,92,246,0.2);
-}
-.status-released {
-  background: var(--success-bg);
-  color: var(--success);
-  border: 1px solid rgba(16,185,129,0.2);
-}
-
-/* ===== Links ===== */
-.link {
-  color: var(--accent);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-  position: relative;
-}
-.link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--accent);
-  transition: width var(--transition);
-}
-.link:hover {
-  color: var(--accent-hover);
-}
-.link:hover::after {
-  width: 100%;
-}
-
-/* ===== Collapse ===== */
-.collapse-header {
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  padding: 4px 0;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
-}
-.collapse-header:hover {
-  background: var(--surface-raised);
-}
-.collapse-header .arrow {
-  transition: transform var(--transition);
-  display: inline-block;
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-right: 6px;
-}
-.collapse-header .arrow.open {
-  transform: rotate(90deg);
-}
-.collapse-header h2 {
-  margin-right: 10px;
-}
-.collapse-body {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height var(--transition-slow);
-}
-.collapse-body.expanded {
-  max-height: 4000px;
-}
-
-/* ===== Tags ===== */
-.project-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: var(--radius);
-  font-size: 11px;
-  font-weight: 550;
-  transition: all var(--transition-fast);
-}
-.project-tag:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.project-tag.has-mr {
-  border: 2px solid currentColor;
-  font-weight: 600;
-}
-.project-tag[data-color="0"] { background: #ffcdd2; color: #b71c1c; border: 1px solid rgba(183,28,28,0.12); }
-.project-tag[data-color="1"] { background: #c8e6c9; color: #2e7d32; border: 1px solid rgba(46,125,50,0.12); }
-.project-tag[data-color="2"] { background: #bbdefb; color: #1565c0; border: 1px solid rgba(21,101,192,0.12); }
-.project-tag[data-color="3"] { background: #ffe0b2; color: #e65100; border: 1px solid rgba(230,81,0,0.12); }
-.project-tag[data-color="4"] { background: #e1bee7; color: #7b1fa2; border: 1px solid rgba(123,31,162,0.12); }
-.project-tag[data-color="5"] { background: #b2dfdb; color: #00695c; border: 1px solid rgba(0,105,92,0.12); }
-.project-tag[data-color="6"] { background: #fff9c4; color: #f57f17; border: 1px solid rgba(245,127,23,0.12); }
-.project-tag[data-color="7"] { background: #f8bbd0; color: #c2185b; border: 1px solid rgba(194,24,91,0.12); }
-.project-tag[data-color="8"] { background: #c5cae9; color: #283593; border: 1px solid rgba(40,53,147,0.12); }
-.project-tag[data-color="9"] { background: #dcedc8; color: #558b2f; border: 1px solid rgba(85,139,47,0.12); }
-.project-tag[data-color="10"] { background: #ffccbc; color: #bf360c; border: 1px solid rgba(191,54,12,0.12); }
-.project-tag[data-color="11"] { background: #b3e5fc; color: #0277bd; border: 1px solid rgba(2,119,189,0.12); }
-.project-tag[data-color="12"] { background: #e6d5c8; color: #5d4037; border: 1px solid rgba(93,64,55,0.12); }
-.project-tag[data-color="13"] { background: #ffcdd2; color: #b71c1c; border: 1px solid rgba(183,28,28,0.12); }
-.project-tag[data-color="14"] { background: #c8e6c9; color: #2e7d32; border: 1px solid rgba(46,125,50,0.12); }
-.project-tag[data-color="15"] { background: #bbdefb; color: #1565c0; border: 1px solid rgba(21,101,192,0.12); }
-.project-tag[data-color="16"] { background: #ffe0b2; color: #e65100; border: 1px solid rgba(230,81,0,0.12); }
-.project-tag[data-color="17"] { background: #e1bee7; color: #7b1fa2; border: 1px solid rgba(123,31,162,0.12); }
-.project-tag[data-color="18"] { background: #b2dfdb; color: #00695c; border: 1px solid rgba(0,105,92,0.12); }
-.project-tag[data-color="19"] { background: #fff9c4; color: #f57f17; border: 1px solid rgba(245,127,23,0.12); }
-.project-tag[data-color="20"] { background: #f8bbd0; color: #c2185b; border: 1px solid rgba(194,24,91,0.12); }
-.project-tag[data-color="21"] { background: #c5cae9; color: #283593; border: 1px solid rgba(40,53,147,0.12); }
-.project-tag[data-color="22"] { background: #dcedc8; color: #558b2f; border: 1px solid rgba(85,139,47,0.12); }
-.project-tag[data-color="23"] { background: #ffccbc; color: #bf360c; border: 1px solid rgba(191,54,12,0.12); }
-.project-tag[data-color="24"] { background: #b3e5fc; color: #0277bd; border: 1px solid rgba(2,119,189,0.12); }
-.project-tag[data-color="25"] { background: #e6d5c8; color: #5d4037; border: 1px solid rgba(93,64,55,0.12); }
-.project-tag[data-color="26"] { background: #ffcdd2; color: #b71c1c; border: 1px solid rgba(183,28,28,0.12); }
-.project-tag[data-color="27"] { background: #c8e6c9; color: #2e7d32; border: 1px solid rgba(46,125,50,0.12); }
-.project-tag[data-color="28"] { background: #bbdefb; color: #1565c0; border: 1px solid rgba(21,101,192,0.12); }
-.project-tag[data-color="29"] { background: #ffe0b2; color: #e65100; border: 1px solid rgba(230,81,0,0.12); }
-.project-tag[data-color="0"].has-mr { background: #ef5350; color: #fff; }
-.project-tag[data-color="1"].has-mr { background: #66bb6a; color: #fff; }
-.project-tag[data-color="2"].has-mr { background: #42a5f5; color: #fff; }
-.project-tag[data-color="3"].has-mr { background: #ffa726; color: #fff; }
-.project-tag[data-color="4"].has-mr { background: #ab47bc; color: #fff; }
-.project-tag[data-color="5"].has-mr { background: #26a69a; color: #fff; }
-.project-tag[data-color="6"].has-mr { background: #fdd835; color: #333; }
-.project-tag[data-color="7"].has-mr { background: #ec407a; color: #fff; }
-.project-tag[data-color="8"].has-mr { background: #5c6bc0; color: #fff; }
-.project-tag[data-color="9"].has-mr { background: #9ccc65; color: #fff; }
-.project-tag[data-color="10"].has-mr { background: #ff7043; color: #fff; }
-.project-tag[data-color="11"].has-mr { background: #29b6f6; color: #fff; }
-.project-tag[data-color="12"].has-mr { background: #a1887f; color: #fff; }
-.project-tag[data-color="13"].has-mr { background: #ef5350; color: #fff; }
-.project-tag[data-color="14"].has-mr { background: #66bb6a; color: #fff; }
-.project-tag[data-color="15"].has-mr { background: #42a5f5; color: #fff; }
-.project-tag[data-color="16"].has-mr { background: #ffa726; color: #fff; }
-.project-tag[data-color="17"].has-mr { background: #ab47bc; color: #fff; }
-.project-tag[data-color="18"].has-mr { background: #26a69a; color: #fff; }
-.project-tag[data-color="19"].has-mr { background: #fdd835; color: #333; }
-.project-tag[data-color="20"].has-mr { background: #ec407a; color: #fff; }
-.project-tag[data-color="21"].has-mr { background: #5c6bc0; color: #fff; }
-.project-tag[data-color="22"].has-mr { background: #9ccc65; color: #fff; }
-.project-tag[data-color="23"].has-mr { background: #ff7043; color: #fff; }
-.project-tag[data-color="24"].has-mr { background: #29b6f6; color: #fff; }
-.project-tag[data-color="25"].has-mr { background: #a1887f; color: #fff; }
-.project-tag[data-color="26"].has-mr { background: #ef5350; color: #fff; }
-.project-tag[data-color="27"].has-mr { background: #66bb6a; color: #fff; }
-.project-tag[data-color="28"].has-mr { background: #42a5f5; color: #fff; }
-.project-tag[data-color="29"].has-mr { background: #ffa726; color: #fff; }
-.branch-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--success-bg);
-  color: var(--success);
-  padding: 3px 8px;
-  border-radius: var(--radius);
-  font-size: 11px;
-  font-family: var(--mono);
-  font-weight: 550;
-  border: 1px solid rgba(16,185,129,0.15);
-  transition: all var(--transition-fast);
-}
-.branch-tag:hover {
-  background: var(--success-light);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(16,185,129,0.15);
-}
-.branch-tag .branch-text {
-  cursor: pointer;
-  transition: color var(--transition-fast);
-  position: relative;
-}
-.branch-tag .branch-text::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 1.5px;
-  background: var(--accent);
-  transition: width var(--transition-fast);
-}
-.branch-tag .branch-text:hover {
-  color: var(--accent);
-}
-.branch-tag .branch-text:hover::after {
-  width: 100%;
-}
-.mr-link {
-  font-size: 11px;
-  color: var(--accent);
-  text-decoration: none;
-  cursor: pointer;
-  margin-left: 4px;
-  font-weight: 600;
-  padding: 1px 4px;
-  border-radius: 3px;
-  transition: all var(--transition-fast);
-}
-.mr-link:hover {
-  background: var(--accent-bg);
-}
-.copy-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 4px;
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1;
-  transition: all var(--transition-fast);
-  border-radius: 3px;
-}
-.copy-btn:hover {
-  color: var(--accent);
-  background: var(--accent-bg);
-}
-
-.note-btn {
-  background: none;
-  border: 1px solid var(--border);
-  cursor: pointer;
-  padding: 1px 5px;
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.4;
-  border-radius: 4px;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-}
-.note-btn:hover {
-  color: var(--warning);
-  border-color: var(--warning);
-  background: var(--warning-bg);
-}
-.note-btn.has-notes {
-  color: var(--warning);
-  border-color: rgba(245,158,11,0.4);
-  background: var(--warning-bg);
-}
-.note-btn.has-notes:hover {
-  color: var(--warning);
-  border-color: var(--warning);
-  background: var(--warning-light);
-}
-
-/* ===== Note dialog ===== */
-.note-box {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: 0;
-  box-shadow: var(--shadow-lg);
-  max-width: 760px;
-  width: 92%;
-  border: 1px solid var(--border);
-  animation: dialogIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.note-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-}
-.note-header .btn-close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color var(--transition-fast);
-}
-.note-header .btn-close:hover {
-  color: var(--text);
-}
-.note-body {
-  padding: 16px 20px;
-}
-.note-body textarea {
-  width: 100%;
-  min-height: 340px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-family: var(--mono);
-  color: var(--text);
-  background: var(--bg);
-  resize: vertical;
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-.note-body textarea:focus {
-  border-color: var(--accent);
-}
-.note-body textarea::placeholder {
-  color: var(--text-muted);
-}
-.note-body .note-info {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-.note-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 12px 20px;
-  border-top: 1px solid var(--border-light);
-}
-
-/* ===== Branch right-click context menu ===== */
-.branch-ctx-menu {
-  position: fixed;
-  z-index: 9999;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  padding: 4px;
-  min-width: 134px;
-  animation: dialogIn 0.12s ease;
-}
-.branch-ctx-item {
-  padding: 7px 12px;
-  font-size: 13px;
-  color: var(--text);
-  border-radius: 6px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--transition-fast);
-}
-.branch-ctx-item:hover { background: var(--bg); }
-.branch-ctx-item.danger { color: var(--danger); }
-.branch-ctx-item.danger:hover { background: var(--danger-bg); }
-
-.td-projects {
-  max-width: 450px;
-  min-width: 280px;
-}
-.action-btns .btn {
-  margin-bottom: 6px;
-  margin-right: 6px;
-}
-.action-btns .btn:last-child {
-  margin-bottom: 0;
-}
-
-.pair-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.pair-row input {
-  flex: 1;
-  min-width: 100px;
-}
-.branch-lookup-btn {
-  flex-shrink: 0;
-  padding: 2px 4px;
-  font-size: 13px;
-  line-height: 1;
-}
-/* 自定义下拉框样式 */
-input[data-role="projectName"],
-input[data-role="syncProjectName"] {
-  position: relative;
-}
-.project-dropdown {
-  position: fixed;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 1000;
-  max-height: 200px;
-  overflow-y: auto;
-}
-.project-dropdown-item {
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 12px;
-  color: var(--text);
-  transition: background var(--transition-fast);
-  border-bottom: 1px solid var(--border-light);
-}
-.project-dropdown-item:last-child {
-  border-bottom: none;
-}
-.project-dropdown-item:hover {
-  background: var(--accent-bg);
-  color: var(--accent);
-}
-.project-dropdown-item.selected {
-  background: var(--accent);
-  color: #fff;
-}
-
-/* ===== Project Manager ===== */
-.project-mgr .tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: var(--spacing-sm);
-  padding-bottom: var(--spacing-sm);
-}
-.project-mgr .tag-item {
-  display: inline-flex;
-  align-items: center;
-  background: var(--surface);
-  color: var(--text);
-  padding: 6px 10px;
-  border-radius: var(--radius);
-  font-size: 12px;
-  font-weight: 550;
-  border: 1px solid var(--border);
-  transition: all var(--transition);
-  box-shadow: var(--shadow-sm);
-  position: relative;
-}
-.project-mgr .tag-item:hover {
-  border-color: var(--accent);
-  box-shadow: 0 4px 12px rgba(37,99,235,0.08);
-  transform: translateY(-1px);
-  padding-right: 12px;
-}
-.project-mgr .tag-item .proj-name {
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-}
-.project-mgr .tag-item .mr-link {
-  color: var(--accent);
-  font-size: 11px;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 12px;
-  background: var(--accent-bg);
-  border: 1px solid rgba(37,99,235,0.12);
-  transition: all var(--transition-fast);
-  margin-left: 6px;
-}
-.project-mgr .tag-item .mr-link:hover {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-  transform: translateY(-1px);
-}
-.project-mgr .tag-item .path-tag {
-  font-size: 12px;
-  margin-left: 4px;
-  cursor: help;
-  opacity: 0.7;
-}
-.project-mgr .tag-item .edit-btn,
-.project-mgr .tag-item .del {
-  cursor: pointer;
-  font-size: 11px;
-  line-height: 1;
-  transition: all var(--transition-fast);
-  padding: 3px 5px;
-  border-radius: var(--radius-sm);
-  display: none;
-  position: relative;
-  z-index: 1;
-}
-.project-mgr .tag-item:hover .edit-btn,
-.project-mgr .tag-item:hover .del {
-  display: inline-block;
-  margin-left: 6px;
-}
-.project-mgr .tag-item .edit-btn {
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-}
-.project-mgr .tag-item .edit-btn:hover {
-  color: var(--accent);
-}
-.project-mgr .tag-item .del {
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-}
-.project-mgr .tag-item .del:hover {
-  color: var(--danger);
-}
-.project-mgr .edit-row {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-  padding: var(--spacing-sm);
-  background: var(--accent-bg);
-  border-radius: var(--radius);
-  border: 1px solid rgba(37,99,235,0.15);
-  margin-bottom: var(--spacing-sm);
-}
-.project-mgr .edit-row input {
-  flex: 1;
-  min-width: 120px;
-}
-.project-mgr .add-row {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-  margin-top: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
-  border-top: 1px solid var(--border-light);
-}
-.pm-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  cursor: pointer;
-  user-select: none;
-  font-weight: 650;
-  font-size: 13px;
-  color: var(--text);
-  padding: 10px 0;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
-}
-.pm-header:hover {
-  background: var(--surface-raised);
-}
-.pm-header .arrow {
-  transition: transform var(--transition);
-  font-size: 11px;
-  color: var(--text-muted);
-  display: inline-block;
-}
-.pm-header .arrow.open {
-  transform: rotate(90deg);
-}
-.pm-header .hint {
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 400;
-}
-
-/* ===== Dialogs ===== */
-.dialog-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.45);
-  z-index: 1000;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(6px);
-  transition: opacity var(--transition);
-}
-.dialog-overlay.show {
-  opacity: 1;
-}
-.confirm-box {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: 36px;
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-  max-width: 400px;
-  border: 1px solid var(--border);
-  animation: dialogIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-@keyframes dialogIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-.confirm-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-  animation: iconPulse 1.5s ease-in-out infinite;
-}
-@keyframes iconPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-.confirm-title {
-  font-size: 16px;
-  font-weight: 650;
-  margin-bottom: 8px;
-  color: var(--text);
-}
-.confirm-msg {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 24px;
-  line-height: 1.6;
-}
-.confirm-btns {
-  display: flex;
-  gap: var(--spacing-sm);
-  justify-content: center;
-}
-
-/* ===== Daily reminder modal ===== */
-.reminder-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease;
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.reminder-overlay.show {
-  display: flex;
-}
-.reminder-modal {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-.reminder-modal .reminder-icon {
-  font-size: 48px;
-  margin-bottom: var(--spacing-md);
-}
-.reminder-modal .reminder-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: var(--spacing-sm);
-}
-.reminder-modal .reminder-text {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: var(--spacing-md);
-  line-height: 1.5;
-}
-.reminder-modal .reminder-btns {
-  display: flex;
-  gap: var(--spacing-sm);
-  justify-content: center;
-}
-.reminder-modal .reminder-btns .btn {
-  min-width: 120px;
-}
-
-/* ===== Branch sync progress bar ===== */
-.branch-progress {
-  max-width: 1400px;
-  margin: 0 auto var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--surface);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
-}
-.branch-progress-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-  font-size: 12px;
-}
-.branch-progress-label {
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-.branch-progress-text {
-  color: var(--text-muted);
-  font-family: var(--mono);
-}
-.branch-progress-track {
-  height: 4px;
-  background: var(--border-light);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.branch-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--purple));
-  border-radius: 2px;
-  transition: width 0.3s ease;
-  width: 0%;
-}
-
-/* ===== Branch modal ===== */
-.branch-overlay {
-  display: flex;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 9998;
-  align-items: center;
-  justify-content: center;
-}
-.branch-modal {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-.branch-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--border);
-}
-.branch-header h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.branch-header .header-search {
-  flex: 1;
-  max-width: 260px;
-  padding: 4px 8px;
-  font-size: 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: var(--text);
-  outline: none;
-  margin-left: auto;
-}
-.branch-header .header-search:focus {
-  border-color: var(--accent);
-}
-.branch-header .btn-close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 4px 8px;
-}
-.branch-header .btn-close:hover {
-  color: var(--text);
-}
-.branch-content {
-  padding: var(--spacing-md) var(--spacing-lg);
-  overflow-y: auto;
-  flex: 1;
-}
-.branch-loading {
-  text-align: center;
-  color: var(--text-muted);
-  padding: var(--spacing-lg);
-}
-.branch-project {
-  margin-bottom: var(--spacing-md);
-}
-.branch-project-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: var(--spacing-xs);
-}
-.branch-count {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-left: var(--spacing-xs);
-}
-.branch-list {
-  background: var(--bg);
-  border-radius: var(--radius);
-  padding: var(--spacing-xs);
-}
-.branch-item {
-  display: flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-.branch-item:hover {
-  background: var(--accent-bg);
-}
-.branch-name {
-  flex: 1;
-  font-size: 13px;
-  color: var(--accent);
-  font-weight: 500;
-}
-.branch-date {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-left: var(--spacing-sm);
-}
-.branch-author {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-left: var(--spacing-sm);
-}
-.branch-error {
-  font-size: 12px;
-  color: var(--danger);
-  padding: var(--spacing-xs);
-}
-.branch-empty {
-  font-size: 12px;
-  color: var(--text-muted);
-  padding: var(--spacing-xs);
-}
-.branch-footer {
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-}
-
-.branch-item.hidden-by-search {
-  display: none;
-}
-
-.branch-item.released-branch .branch-name {
-  text-decoration: line-through;
-  color: var(--text-muted);
-}
-
-/* ===== Empty state ===== */
-.empty-state {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--text-muted);
-  font-size: 14px;
-  display: none;
-  background: var(--surface-raised);
-  border-radius: var(--radius-lg);
-}
-
-/* ===== Toast ===== */
-.toast {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: linear-gradient(135deg, var(--text) 0%, #374151 100%);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: var(--radius-lg);
-  font-size: 13px;
-  font-weight: 550;
-  z-index: 9999;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  pointer-events: none;
-  opacity: 0;
-  transition: all var(--transition);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* ===== Scrollbar ===== */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--surface-raised);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-  border: 2px solid var(--surface-raised);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 900px) {
-  .container {
-    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-md);
-  }
-  th, td {
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-  .page-title {
-    font-size: 18px;
-  }
-  .td-projects {
-    min-width: 180px;
-  }
-  .search-wrap input {
-    width: 180px;
-  }
-  .header-actions {
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 600px) {
-  .container {
-    padding: var(--spacing-sm);
-  }
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .search-wrap input {
-    width: 100%;
-  }
-  .header-actions {
-    width: 100%;
-  }
-  .btn {
-    flex: 1;
-    justify-content: center;
-  }
-}
-</style>
+<link rel="stylesheet" href="./todo-release.css" />
 </head>
 <body>
+<div id="app" v-cloak>
 <div class="container">
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+  <div class="toast" :class="{show:toastShow}">{{toastMsg}}</div>
 
-  <!-- Daily reminder modal -->
-  <div class="reminder-overlay" id="reminderOverlay">
+  <!-- Daily reminder -->
+  <div class="reminder-overlay" :class="{show:showReminder}">
     <div class="reminder-modal">
       <div class="reminder-icon">💾</div>
       <div class="reminder-title">数据备份提醒</div>
       <div class="reminder-text">今日首次打开，请导出保存数据以防浏览器缓存清理后丢失。</div>
       <div class="reminder-btns">
-        <button class="btn btn-success" onclick="exportAndDismiss()" title="导出数据备份到本地文件">导出保存</button>
-        <button class="btn btn-outline" onclick="dismissReminder()" title="跳过本次备份提醒">暂不保存</button>
+        <button class="btn btn-success" @click="exportAndDismiss">导出保存</button>
+        <button class="btn btn-outline" @click="dismissReminder">暂不保存</button>
       </div>
     </div>
   </div>
 
   <!-- Header -->
   <div class="page-header">
-    <h1 class="page-title">需求发版管理<a href="./使用说明.html" target="_blank" class="help-icon" title="打开使用说明">?</a><span class="sub" id="totalCount"></span></h1>
+    <h1 class="page-title">需求发版管理<a href="./使用说明.html" target="_blank" class="help-icon" title="打开使用说明">?</a><span class="sub">共 {{items.length}} 条</span></h1>
     <div class="header-actions">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input id="searchInput" placeholder="搜索需求名称、链接ID或分支名..." oninput="onSearch()" />
-        <button class="search-clear" id="searchClear" onclick="clearSearch()" title="清除搜索">&times;</button>
+        <input v-model="searchQuery" placeholder="搜索需求名称、链接ID或分支名..." />
+        <button class="search-clear" :style="{display:searchQuery?'block':'none'}" @click="searchQuery=''">&times;</button>
       </div>
-      <button class="btn btn-success btn-sm" onclick="exportToFile()" title="导出数据备份到本地 JSON 文件">导出</button>
-      <label class="btn btn-outline btn-sm" style="cursor:pointer">
-        导入 <input type="file" accept=".json" style="display:none" onchange="importFromFile(event)" />
-      </label>
-      <button class="btn btn-warning btn-sm" onclick="fetchAllBranches()" title="从 Git 仓库同步最新分支数据">获取分支</button>
-      <button class="btn btn-primary" onclick="startAdding()" title="新增一条发版需求">+ 新增需求</button>
+      <button class="btn btn-success btn-sm" @click="exportToFile">导出</button>
+      <label class="btn btn-outline btn-sm" style="cursor:pointer">导入 <input type="file" accept=".json" style="display:none" @change="importFromFile" /></label>
+      <button class="btn btn-warning btn-sm" @click="fetchAllBranches">获取分支</button>
+      <button class="btn btn-primary" @click="startAdding">+ 新增需求</button>
     </div>
   </div>
 
-  <!-- Branch sync progress bar -->
-  <div class="branch-progress" id="branchProgress" style="display:none">
+  <!-- Branch progress -->
+  <div class="branch-progress" v-if="branchProgress.visible">
     <div class="branch-progress-info">
       <span class="branch-progress-label">同步分支数据</span>
-      <span class="branch-progress-text" id="branchProgressText">0/0</span>
+      <span class="branch-progress-text">{{branchProgress.done}}/{{branchProgress.total}}</span>
     </div>
     <div class="branch-progress-track">
-      <div class="branch-progress-bar" id="branchProgressBar"></div>
+      <div class="branch-progress-bar" :style="{width:(branchProgress.done/branchProgress.total*100)+'%'}"></div>
     </div>
   </div>
 
   <!-- Project manager -->
   <div class="section card project-mgr">
     <div class="card-body">
-      <div class="pm-header" onclick="toggleProjectMgr()">
-        <span class="arrow" id="pmArrow">▶</span>
+      <div class="pm-header" @click="pmExpanded=!pmExpanded">
+        <span class="arrow" :class="{open:pmExpanded}">▶</span>
         <span>项目管理</span>
         <span class="hint">维护项目名称，新增需求时可从下拉选择</span>
       </div>
-      <div class="collapse-body" id="pmBody">
-        <div class="tag-list" id="pmTagList"></div>
+      <div class="collapse-body" :class="{expanded:pmExpanded}">
+        <div class="tag-list">
+          <template v-for="(p,i) in projectNames" :key="i">
+            <span class="tag-item" v-if="editProjectIdx!==i">
+              <span class="proj-name project-tag" :class="{'has-mr':p.mr}" :data-color="getColorIdx(p.name)">{{p.name}}</span>
+              <a v-if="p.mr" class="mr-link" :href="p.mr" target="_blank" title="打开 MR 页面">MR</a>
+              <a v-if="p.mr" class="mr-link" :href="buildBranchUrl(p.mr,'master')" target="_blank" title="新建分支（基于 master）" style="color:var(--cyan)">NB</a>
+              <span v-if="p.localPath" class="path-tag" :title="p.localPath">📁</span>
+              <button class="edit-btn" title="编辑项目" @click="editProjectIdx=i">✏️</button>
+              <button class="del" title="删除项目" @click="removeProject(i)">×</button>
+            </span>
+          </template>
+          <div class="edit-row" v-if="editProjectIdx>=0">
+            <input v-model="editProjectName" placeholder="项目名称" style="width:150px">
+            <input v-model="editProjectMr" placeholder="MR 地址（可选）" style="width:260px">
+            <input v-model="editProjectPath" placeholder="本地路径（可选）" style="width:200px">
+            <button class="btn btn-success btn-sm" @click="saveProjectEdit">保存</button>
+            <button class="btn btn-outline btn-sm" @click="editProjectIdx=-1">取消</button>
+          </div>
+        </div>
         <div class="add-row">
-          <input id="pmNewName" placeholder="项目名称" style="width:150px"
-            onkeydown="if(event.key==='Enter')addProjectName()" />
-          <input id="pmNewMr" placeholder="MR 地址（可选）" style="width:260px"
-            onkeydown="if(event.key==='Enter')addProjectName()" />
-          <input id="pmNewPath" placeholder="本地路径（可选）" style="width:200px"
-            onkeydown="if(event.key==='Enter')addProjectName()" />
-          <button class="btn btn-primary btn-sm" onclick="addProjectName()" title="将项目添加到项目列表">添加</button>
+          <input v-model="newProjectName" placeholder="项目名称" style="width:150px" @keydown.enter="addProject">
+          <input v-model="newProjectMr" placeholder="MR 地址（可选）" style="width:260px" @keydown.enter="addProject">
+          <input v-model="newProjectPath" placeholder="本地路径（可选）" style="width:200px" @keydown.enter="addProject">
+          <button class="btn btn-primary btn-sm" @click="addProject">添加</button>
         </div>
         <div class="add-row" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
           <span style="font-size:12px;color:var(--text-muted)">项目公用上线分支名：</span>
-          <input id="pmLaunchBranch" placeholder="如 master_launched" style="width:160px"
-            value="" onkeydown="if(event.key==='Enter')saveLaunchBranchName()" />
-          <button class="btn btn-purple btn-sm" onclick="saveLaunchBranchName()" title="保存所有项目的公用上线目标分支名">保存上线分支</button>
+          <input v-model="launchBranch" placeholder="如 master_launched" style="width:160px" @keydown.enter="saveLaunchBranch">
+          <button class="btn btn-purple btn-sm" @click="saveLaunchBranch">保存上线分支</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Pending section -->
-  <div class="section">
-    <div class="section-header">
-      <div class="collapse-header" onclick="togglePending()">
-        <span class="arrow" id="pendingArrow">▶</span>
-        <h2>待发版</h2>
-        <span class="count count-pending" id="pendingCount"></span>
-      </div>
-      <span style="flex:1"></span>
-    </div>
-    <div class="collapse-body" id="pendingBody">
-      <div class="card card-body-flush" style="margin-top:12px">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:120px">需求名称</th>
-                <th style="width:70px">状态</th>
-                <th style="width:100px">需求链接</th>
-                <th style="width:320px">涉及项目及分支名</th>
-                <th style="width:180px">一同发版分支</th>
-                <th style="width:120px">操作</th>
-              </tr>
-            </thead>
-            <tbody id="pendingTbody"></tbody>
-          </table>
+  <!-- Table sections -->
+  <template v-for="section in sections" :key="section.key">
+    <div class="section">
+      <div class="section-header">
+        <div class="collapse-header" @click="toggleSection(section.key)">
+          <span class="arrow" :class="{open:section.expanded}">▶</span>
+          <h2>{{section.title}}</h2>
+          <span class="count" :class="'count-'+section.key">{{section.items.length||'0'}}</span>
+          <button v-if="section.key==='releasing'&&section.items.length" class="btn btn-ghost btn-sm" @click="releaseAllToDone">全部发版</button>
         </div>
-        <div class="empty-state" id="pendingEmpty">暂无待发版需求</div>
+        <span style="flex:1"></span>
+        <span v-if="section.key==='releasing'" style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px">
+          <span style="color:var(--text-muted)">发版项目：</span>
+          <span v-for="p in releasingProjects" :key="p.name" class="project-tag" :class="{'has-mr':p.url}" :data-color="getColorIdx(p.name)" style="font-size:11px" :style="{cursor:p.url?'pointer':'default'}" @click="openMrUrl(p.url)" :title="p.url?'创建发版 MR → master':''">{{p.name}}</span>
+        </span>
       </div>
-    </div>
-  </div>
-
-  <!-- Releasing section -->
-  <div class="section">
-    <div class="section-header">
-      <div class="collapse-header" onclick="toggleReleasing()">
-        <span class="arrow" id="releasingArrow">▶</span>
-        <h2>发版中</h2>
-        <span class="count count-releasing" id="releasingCount"></span>
-        <button class="btn btn-ghost btn-sm" id="releaseAllDoneBtn" onclick="releaseAllToDone()" style="display:none;margin-left:8px" title="将发版中所有需求标记为已发版">全部发版</button>
-      </div>
-      <span style="flex:1"></span>
-      <span id="releasingProjectSummary" style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px"></span>
-    </div>
-    <div class="collapse-body" id="releasingBody">
-      <div class="card card-body-flush" style="margin-top:12px">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:120px">需求名称</th>
-                <th style="width:70px">状态</th>
-                <th style="width:100px">需求链接</th>
-                <th style="width:320px">涉及项目及分支名</th>
-                <th style="width:180px">一同发版分支</th>
-                <th style="width:120px">操作</th>
-              </tr>
-            </thead>
-            <tbody id="releasingTbody"></tbody>
-          </table>
+      <div class="collapse-body" :class="{expanded:section.expanded}">
+        <div class="card card-body-flush" style="margin-top:12px">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th style="width:120px">需求名称</th><th style="width:70px">状态</th><th style="width:100px">需求链接</th>
+                <th style="width:320px">涉及项目及分支名</th><th style="width:180px">一同发版分支</th>
+                <th v-if="section.key==='released'" style="width:120px">发版时间</th>
+                <th :style="{width:section.key==='released'?'110px':'120px'}">操作</th>
+              </tr></thead>
+              <tbody>
+                <template v-for="ai in (section.key==='pending'?addingItems:[])" :key="ai.id">
+                  <tr class="edit-row">
+                    <td><input class="inline-input" v-model="ai.name" placeholder="需求名称（必填）"></td>
+                    <td><span class="status-tag status-new">新建</span></td>
+                    <td><input class="inline-input" v-model="ai.link" placeholder="需求链接"></td>
+                    <!-- Edit projects -->
+                    <td class="td-projects" style="min-width:340px">
+                      <div v-for="(ep,epi) in ai._editProjects" :key="epi" class="pair-row">
+                        <input v-model="ep.name" placeholder="项目名" size="10" autocomplete="off" @focus="showProjDropdown(ep,'name',$event)" @blur="hideProjDropdown" @input="filterDropdown(ep,'name',ep.name)">
+                        <input v-model="ep.branch" placeholder="分支名" size="14" @input="ep.branch=ep.branch.replace(/\s/g,'')" :title="ep.branch">
+                        <button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支" @click="openBranchLookup(ep)">📂</button>
+                        <button class="btn btn-outline btn-xs note-btn edit-note-btn" :class="{'has-notes':ep.notes}" :title="ep.notes?'编辑备注':'添加备注'" @click="openInlineNoteForEdit(ep)">📝</button>
+                        <button class="btn btn-danger btn-xs" title="移除此行" @click="ai._editProjects.splice(epi,1)">×</button>
+                      </div>
+                      <button class="btn btn-outline btn-xs" style="margin-top:4px" @click="ai._editProjects.push({name:'',branch:'',notes:''})">+ 添加分支</button>
+                    </td>
+                    <!-- Edit sync branches -->
+                    <td>
+                      <div v-for="(es,esi) in ai._editSyncBranches" :key="esi" class="pair-row">
+                        <input v-model="es.project" placeholder="项目名" size="10" autocomplete="off" @focus="showProjDropdown(es,'project',$event)" @blur="hideProjDropdown" @input="filterDropdown(es,'project',es.project)">
+                        <input v-model="es.branch" placeholder="分支名" size="14" @input="es.branch=es.branch.replace(/\s/g,'')" :title="es.branch">
+                        <button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支" @click="openBranchLookup(es,'sync')">📂</button>
+                        <button class="btn btn-outline btn-xs note-btn edit-note-btn" :class="{'has-notes':es.notes}" :title="es.notes?'编辑备注':'添加备注'" @click="openInlineNoteForEdit(es)">📝</button>
+                        <button class="btn btn-danger btn-xs" title="移除此行" @click="ai._editSyncBranches.splice(esi,1)">×</button>
+                      </div>
+                      <button class="btn btn-outline btn-xs" style="margin-top:4px" @click="ai._editSyncBranches.push({project:'',branch:'',notes:''})">+ 添加一同发版分支</button>
+                    </td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="btn btn-success btn-xs" @click="saveAdding(ai)">保存</button>
+                        <button class="btn btn-secondary btn-xs" @click="addingItems=addingItems.filter(a=>a.id!==ai.id)">取消</button>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+                <template v-for="item in section.items" :key="item.id">
+                  <tr v-if="editingIds[item.id]" class="edit-row">
+                    <td><input class="inline-input" v-model="item._editName" placeholder="需求名称（必填）"></td>
+                    <td><span class="status-tag" :class="statusClass(item.status)">{{statusLabel(item.status)}}</span></td>
+                    <td><input class="inline-input" v-model="item._editLink" placeholder="需求链接"></td>
+                    <td class="td-projects" style="min-width:340px">
+                      <div v-for="(ep,epi) in item._editProjects" :key="epi" class="pair-row">
+                        <input v-model="ep.name" placeholder="项目名" size="10" autocomplete="off" @focus="showProjDropdown(ep,'name',$event)" @blur="hideProjDropdown" @input="filterDropdown(ep,'name',ep.name)">
+                        <input v-model="ep.branch" placeholder="分支名" size="14" @input="ep.branch=ep.branch.replace(/\s/g,'')" :title="ep.branch">
+                        <button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支" @click="openBranchLookup(ep)">📂</button>
+                        <button class="btn btn-outline btn-xs note-btn edit-note-btn" :class="{'has-notes':ep.notes}" :title="ep.notes?'编辑备注':'添加备注'" @click="openInlineNoteForEdit(ep)">📝</button>
+                        <button class="btn btn-danger btn-xs" title="移除此行" @click="item._editProjects.splice(epi,1)">×</button>
+                      </div>
+                      <button class="btn btn-outline btn-xs" style="margin-top:4px" @click="item._editProjects.push({name:'',branch:'',notes:''})">+ 添加分支</button>
+                    </td>
+                    <td>
+                      <div v-for="(es,esi) in item._editSyncBranches" :key="esi" class="pair-row">
+                        <input v-model="es.project" placeholder="项目名" size="10" autocomplete="off" @focus="showProjDropdown(es,'project',$event)" @blur="hideProjDropdown" @input="filterDropdown(es,'project',es.project)">
+                        <input v-model="es.branch" placeholder="分支名" size="14" @input="es.branch=es.branch.replace(/\s/g,'')" :title="es.branch">
+                        <button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支" @click="openBranchLookup(es,'sync')">📂</button>
+                        <button class="btn btn-outline btn-xs note-btn edit-note-btn" :class="{'has-notes':es.notes}" :title="es.notes?'编辑备注':'添加备注'" @click="openInlineNoteForEdit(es)">📝</button>
+                        <button class="btn btn-danger btn-xs" title="移除此行" @click="item._editSyncBranches.splice(esi,1)">×</button>
+                      </div>
+                      <button class="btn btn-outline btn-xs" style="margin-top:4px" @click="item._editSyncBranches.push({project:'',branch:'',notes:''})">+ 添加一同发版分支</button>
+                    </td>
+                    <td v-if="section.key==='released'"><span style="font-size:11px;color:var(--text-muted);white-space:nowrap">{{item.releaseTime||'-'}}</span></td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="btn btn-success btn-xs" @click="saveEdit(item)">保存</button>
+                        <button class="btn btn-secondary btn-xs" @click="cancelEdit(item)">取消</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr v-else :class="{'row-fresh':item._justAdded}">
+                    <td><strong>{{item.name}}</strong></td>
+                    <td><span class="status-tag" :class="statusClass(item.status)">{{statusLabel(item.status)}}</span></td>
+                    <td><a v-if="item.link" class="link" :href="item.link" target="_blank" :title="item.link">{{truncateUrl(item.link)}}</a><span v-else style="color:var(--text-muted)">-</span></td>
+                    <td class="td-projects">
+                      <template v-if="item.projects&&item.projects.length">
+                        <div v-for="(p,pi) in item.projects" :key="pi" style="margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:nowrap;white-space:nowrap" @contextmenu.prevent="showCtxMenu($event,item,pi,'project')" :style="{cursor:(section.key==='pending'||section.key==='new')?'context-menu':'default'}">
+                          <span class="project-tag" :class="{'has-mr':getProjectInfo(p.name)?.mr}" :data-color="getColorIdx(p.name)" :style="getProjectInfo(p.name)?.mr?{cursor:'pointer'}:{}" :title="getProjectInfo(p.name)?.mr?'点击跳转 MR':''" @click.stop="getProjectInfo(p.name)?.mr&&window.open(getProjectInfo(p.name).mr,'_blank')">{{p.name}}</span>
+                          <span v-if="p.branch" class="branch-tag">
+                            <span class="branch-text" :title="(getProjectInfo(p.name)?.mr?'🔗 ':'')+p.branch" @click.stop="clickBranch(item,p,'project')">{{truncateBranch(p.branch)}}</span>
+                            <button class="copy-btn" title="复制" @click.stop="copyText(p.branch)">📋</button>
+                          </span>
+                          <button v-if="p.notes" class="note-btn has-notes" title="查看备注" @click.stop="openNoteDialog(item,pi,'project',false)">📝</button>
+                        </div>
+                      </template>
+                      <span v-else style="color:var(--text-muted)">-</span>
+                    </td>
+                    <td>
+                      <template v-if="item.syncBranches&&item.syncBranches.length">
+                        <div v-for="(sb,sbi) in item.syncBranches" :key="sbi" style="margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:nowrap;white-space:nowrap" @contextmenu.prevent="showCtxMenu($event,item,sbi,'sync')" :style="{cursor:(section.key==='pending'||section.key==='new')?'context-menu':'default'}">
+                          <span v-if="sb.project" class="project-tag" :class="{'has-mr':getProjectInfo(sb.project)?.mr}" :data-color="getColorIdx(sb.project)" :style="getProjectInfo(sb.project)?.mr?{cursor:'pointer'}:{}" :title="getProjectInfo(sb.project)?.mr?'点击跳转 MR':''" @click.stop="getProjectInfo(sb.project)?.mr&&window.open(getProjectInfo(sb.project).mr,'_blank')">{{sb.project}}</span>
+                          <span v-if="sb.branch" class="branch-tag">
+                            <span class="branch-text" :title="(getProjectInfo(sb.project)?.mr?'🔗 ':'')+sb.branch" @click.stop="clickBranch(item,{name:sb.project,branch:sb.branch},'sync')">{{truncateBranch(sb.branch)}}</span>
+                            <button class="copy-btn" title="复制" @click.stop="copyText(sb.branch)">📋</button>
+                          </span>
+                          <button v-if="sb.notes" class="note-btn has-notes" title="查看备注" @click.stop="openNoteDialog(item,sbi,'sync',false)">📝</button>
+                        </div>
+                      </template>
+                      <span v-else style="color:var(--text-muted)">-</span>
+                    </td>
+                    <td v-if="section.key==='released'"><span style="font-size:11px;color:var(--text-muted);white-space:nowrap">{{item.releaseTime||'-'}}</span></td>
+                    <td>
+                      <div class="action-btns">
+                        <template v-if="item.status==='new'">
+                          <button class="btn btn-info btn-xs" @click="startEdit(item)">编辑</button>
+                          <button class="btn btn-warning btn-xs" @click="changeStatus(item,'pending')">设为待发版</button>
+                          <button class="btn btn-danger btn-xs" @click="showConfirm(item)">删</button>
+                        </template>
+                        <template v-else-if="item.status==='pending'">
+                          <button class="btn btn-info btn-xs" @click="startEdit(item)">编辑</button>
+                          <button class="btn btn-purple btn-xs" @click="releaseItem(item)">发版</button>
+                          <button class="btn btn-secondary btn-xs" @click="changeStatus(item,'new')">回退新建</button>
+                          <button class="btn btn-danger btn-xs" @click="showConfirm(item)">删</button>
+                        </template>
+                        <template v-else-if="item.status==='releasing'">
+                          <button class="btn btn-success btn-xs" @click="changeStatus(item,'released')">标记已发版</button>
+                          <button class="btn btn-warning btn-xs" @click="changeStatus(item,'pending')">恢复待发版</button>
+                          <button class="btn btn-danger btn-xs" @click="showConfirm(item)">删</button>
+                        </template>
+                        <template v-else>
+                          <button class="btn btn-warning btn-xs" @click="changeStatus(item,'pending')">恢复待发版</button>
+                          <button class="btn btn-danger btn-xs" @click="showConfirm(item)">删</button>
+                        </template>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-state" v-if="section.items.length===0&&(section.key!=='pending'||addingItems.length===0)">{{section.empty}}</div>
         </div>
-        <div class="empty-state" id="releasingEmpty">暂无发版中需求</div>
       </div>
     </div>
-  </div>
-
-  <!-- Released section -->
-  <div class="section">
-    <div class="section-header">
-      <div class="collapse-header" onclick="toggleReleased()">
-        <span class="arrow" id="releasedArrow">▶</span>
-        <h2>已发版</h2>
-        <span class="count count-released" id="releasedCount"></span>
-      </div>
-    </div>
-    <div class="collapse-body" id="releasedBody">
-      <div class="card card-body-flush" style="margin-top:12px">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:120px">需求名称</th>
-                <th style="width:70px">状态</th>
-                <th style="width:100px">需求链接</th>
-                <th style="width:320px">涉及项目及分支名</th>
-                <th style="width:180px">一同发版分支</th>
-                <th style="width:120px">发版时间</th>
-                <th style="width:110px">操作</th>
-              </tr>
-            </thead>
-            <tbody id="releasedTbody"></tbody>
-          </table>
-        </div>
-        <div class="empty-state" id="releasedEmpty">暂无已发版需求</div>
-      </div>
-    </div>
-  </div>
+  </template>
 </div>
 
 <!-- Confirm dialog -->
-<div class="dialog-overlay" id="confirmOverlay">
+<div class="dialog-overlay" :style="{display:confirmDialog.item?'flex':'none'}" @click.self="confirmDialog.item=null">
   <div class="confirm-box">
     <div class="confirm-icon">&#9888;</div>
-    <div class="confirm-title" id="confirmTitle">确定删除该需求吗？</div>
-    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-title">确定删除该需求吗？</div>
+    <div class="confirm-msg">需求：{{confirmDialog.item?.name}}</div>
     <div class="confirm-btns">
-      <button class="btn btn-outline btn-sm" onclick="closeConfirm()" title="取消删除">取消</button>
-      <button class="btn btn-danger btn-sm" id="confirmOkBtn" title="确认删除该需求">确定删除</button>
+      <button class="btn btn-outline btn-sm" @click="confirmDialog.item=null">取消</button>
+      <button class="btn btn-danger btn-sm" @click="doDelete">确定删除</button>
     </div>
   </div>
 </div>
 
-<!-- Launch branch dialog (when releasing without global launch branch) -->
-<div class="dialog-overlay" id="launchBranchOverlay">
+<!-- Launch branch dialog -->
+<div class="dialog-overlay" :style="{display:launchDialog.item?'flex':'none'}" @click.self="launchDialog.item=null">
   <div class="confirm-box" style="max-width:520px">
     <div class="confirm-icon">🚀</div>
     <div class="confirm-title">请填写各项目的上线目标分支</div>
-    <div class="confirm-msg" id="launchBranchMsg"></div>
-    <div id="launchBranchProjectList" style="max-height:260px;overflow-y:auto;margin-bottom:12px"></div>
+    <div class="confirm-msg">{{launchDialog.label}}</div>
+    <div style="max-height:260px;overflow-y:auto;margin-bottom:12px">
+      <div v-for="p in launchDialog.projects" :key="p.name" style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light)">
+        <span class="project-tag" :data-color="getColorIdx(p.name)" style="font-size:11px;flex-shrink:0;min-width:80px;text-align:center">{{p.name}}</span>
+        <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">→</span>
+        <input v-model="p.target" placeholder="目标分支" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px" @keydown.enter="confirmLaunch" />
+      </div>
+    </div>
     <div class="confirm-btns">
-      <button class="btn btn-outline btn-sm" onclick="closeLaunchBranchPrompt()" title="取消发版">取消</button>
-      <button class="btn btn-purple btn-sm" onclick="confirmLaunchBranch()" title="确认目标分支并发起发版">确认发版</button>
+      <button class="btn btn-outline btn-sm" @click="launchDialog.item=null">取消</button>
+      <button class="btn btn-purple btn-sm" @click="confirmLaunch">确认发版</button>
     </div>
   </div>
 </div>
 
 <!-- Note dialog -->
-<div class="dialog-overlay" id="noteOverlay" onclick="if(event.target===this)closeNoteDialog()">
+<div class="dialog-overlay" ref="noteOverlay" :style="{display:noteDialog.visible?'flex':'none'}" @click.self="closeNote">
   <div class="note-box">
     <div class="note-header">
-      <span>备注 - <span id="noteBranchLabel"></span></span>
-      <button class="btn-close" onclick="closeNoteDialog()" title="关闭">×</button>
+      <span>备注 - <span>{{noteDialog.label}}</span></span>
+      <button class="btn-close" @click="closeNote">×</button>
     </div>
     <div class="note-body">
-      <div class="note-info" id="noteInfo"></div>
-      <textarea id="noteTextarea" placeholder="输入备注内容（如SQL脚本、DDL变更、注意事项等）..."></textarea>
+      <div class="note-info"><span style="color:var(--accent)">分支: {{noteDialog.branch||'-'}}</span> &middot; <span style="color:var(--purple)">项目: {{noteDialog.project||'-'}}</span></div>
+      <textarea id="noteTextareaEl" v-model="noteDialog.notes" placeholder="输入备注内容（如SQL脚本、DDL变更、注意事项等）..." :readonly="noteDialog.readonly" :style="{background:noteDialog.readonly?'var(--surface)':'',cursor:noteDialog.readonly?'default':''}"></textarea>
     </div>
     <div class="note-footer">
-      <button class="btn btn-outline btn-sm" onclick="closeNoteDialog()" title="取消">取消</button>
-      <button class="btn btn-purple btn-sm" onclick="saveNote()" title="保存备注">保存</button>
+      <button class="btn btn-outline btn-sm" @click="closeNote">{{noteDialog.readonly?'关闭':'取消'}}</button>
+      <button v-if="!noteDialog.readonly" class="btn btn-purple btn-sm" @click="saveNote">保存</button>
     </div>
   </div>
 </div>
 
-<script>
-// ============= Config =============
-const API_PORT = 1949
-// ============= Data =============
-let projectNames = []
-let items = []
-let addingItems = []
-let addingCounter = 0
-let editingIds = {}
-let searchQuery = ''
-let launchBranch = ''  // 全项目上线目标分支名
-let branchesCache = {}  // { projectName: { branches: [...], timestamp: ... } }
-
-function saveLaunchBranch() {
-  localStorage.setItem('todo_launch_branch', launchBranch)
-}
-function loadLaunchBranch() {
-  launchBranch = localStorage.getItem('todo_launch_branch') || ''
-}
-
-function saveBranchCache() {
-  // 保存前清除 origin/ 开头的分支
-  for (const key of Object.keys(branchesCache)) {
-    if (branchesCache[key].branches) {
-      branchesCache[key].branches = branchesCache[key].branches.filter(b => b.branch && b.branch !== 'origin' && !b.branch.startsWith('origin/'))
-    }
-  }
-  localStorage.setItem('todo_branch_cache', JSON.stringify(branchesCache))
-}
-
-function loadBranchCache() {
-  try {
-    branchesCache = JSON.parse(localStorage.getItem('todo_branch_cache')) || {}
-  } catch (e) { branchesCache = {} }
-}
-
-const JSON_FILENAME = 'toDo.json'
-
-function getFullData() { return { projectNames, items, branchesCache, launchBranch } }
-
-function setFullData(data) {
-  if (data && Array.isArray(data.projectNames)) projectNames = data.projectNames
-  if (data && Array.isArray(data.items)) items = data.items
-  if (data && data.branchesCache && typeof data.branchesCache === 'object') branchesCache = data.branchesCache
-  if (data && typeof data.launchBranch === 'string') launchBranch = data.launchBranch
-}
-
-function saveToLocalStorage() {
-  localStorage.setItem('todo_project_names', JSON.stringify(projectNames))
-  localStorage.setItem('todo_release_data', JSON.stringify(items))
-}
-
-async function loadFromJsonFile() {
-  try {
-    const resp = await fetch('./' + JSON_FILENAME, { cache: 'no-store' })
-    if (resp.ok) { const json = await resp.json(); setFullData(json); return true }
-  } catch (e) {}
-  return false
-}
-
-function exportToFile() {
-  const now = new Date()
-  const timestamp = now.getFullYear() +
-    String(now.getMonth() + 1).padStart(2, '0') +
-    String(now.getDate()).padStart(2, '0') + '-' +
-    String(now.getHours()).padStart(2, '0') +
-    String(now.getMinutes()).padStart(2, '0') +
-    String(now.getSeconds()).padStart(2, '0')
-  const filename = `todoList-发版需求-${timestamp}.json`
-  const blob = new Blob([JSON.stringify(getFullData(), null, 2)], { type: 'application/json' })
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(a.href)
-  toast(`已导出 ${filename}`)
-}
-
-function importFromFile(e) {
-  const file = e.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result)
-      setFullData(data)
-      saveToLocalStorage()
-      saveBranchCache()
-      saveLaunchBranch()
-      document.getElementById('pmLaunchBranch').value = launchBranch
-      editingIds = {}; addingItems = []; addingCounter = 0
-      updateProjectDatalist()
-      renderProjectMgr()
-      render()
-      toast('已导入 ' + items.length + ' 条需求')
-    } catch (err) { toast('导入失败：JSON 格式错误') }
-  }
-  reader.readAsText(file)
-  e.target.value = ''
-}
-
-// ============= Init =============
-async function init() {
-  const loaded = await loadFromJsonFile()
-  if (!loaded) {
-    try { projectNames = JSON.parse(localStorage.getItem('todo_project_names')) || [] } catch (e) { projectNames = [] }
-    try { items = JSON.parse(localStorage.getItem('todo_release_data')) || [] } catch (e) { items = [] }
-    loadBranchCache()
-    loadLaunchBranch()
-  }
-  document.getElementById('pmLaunchBranch').value = launchBranch
-  updateProjectDatalist()
-  renderProjectMgr()
-  render()
-  autoFetchBranches()
-}
-
-function updateProjectDatalist() {
-  // 已改用自定义下拉框，此函数保留但不执行
-}
-
-// 自定义项目下拉框
-function setupProjectDropdown(input) {
-  let dropdown = null
-  let selectedIndex = -1
-  let isUserInput = false // 标记是否为用户输入
-
-  const showDropdown = (filter = false) => {
-    if (dropdown) return
-    dropdown = document.createElement('div')
-    dropdown.className = 'project-dropdown'
-    
-    const rect = input.getBoundingClientRect()
-    dropdown.style.left = rect.left + 'px'
-    dropdown.style.top = (rect.bottom + 2) + 'px'
-    dropdown.style.width = rect.width + 'px'
-    
-    // 如果是用户输入则过滤，否则显示全部
-    const filtered = filter 
-      ? projectNames.filter(p => p.name.toLowerCase().includes(input.value.toLowerCase()))
-      : projectNames
-    
-    if (filtered.length === 0) {
-      dropdown.innerHTML = '<div class="project-dropdown-item" style="color:var(--text-muted)">无匹配项目</div>'
-    } else {
-      filtered.forEach((p, i) => {
-        const item = document.createElement('div')
-        item.className = 'project-dropdown-item'
-        if (p.name === input.value) item.classList.add('selected')
-        item.textContent = p.name
-        item.onclick = () => {
-          input.value = p.name
-          isUserInput = false // 选择后重置标记
-          hideDropdown()
-          input.focus()
-        }
-        dropdown.appendChild(item)
-      })
-    }
-    
-    document.body.appendChild(dropdown)
-  }
-
-  const hideDropdown = () => {
-    if (dropdown) {
-      dropdown.remove()
-      dropdown = null
-    }
-    selectedIndex = -1
-  }
-
-  const updateDropdown = () => {
-    if (!dropdown) return
-    const filtered = projectNames.filter(p => 
-      p.name.toLowerCase().includes(input.value.toLowerCase())
-    )
-    
-    dropdown.innerHTML = ''
-    if (filtered.length === 0) {
-      dropdown.innerHTML = '<div class="project-dropdown-item" style="color:var(--text-muted)">无匹配项目</div>'
-    } else {
-      filtered.forEach((p, i) => {
-        const item = document.createElement('div')
-        item.className = 'project-dropdown-item'
-        if (i === selectedIndex) item.classList.add('selected')
-        item.textContent = p.name
-        item.onclick = () => {
-          input.value = p.name
-          isUserInput = false
-          hideDropdown()
-          input.focus()
-        }
-        dropdown.appendChild(item)
-      })
-    }
-  }
-
-  // focus时显示全部项目（不过滤）
-  input.addEventListener('focus', () => {
-    // 先关闭已有的下拉框（防止 blur 的 setTimeout 还没执行完）
-    if (dropdown) {
-      dropdown.remove()
-      dropdown = null
-    }
-    isUserInput = false
-    showDropdown(false)
-  })
-  
-  // click时也显示下拉框（解决 focus 后再次点击不触发 focus 事件的问题）
-  input.addEventListener('click', () => {
-    if (!dropdown) {
-      isUserInput = false
-      showDropdown(false)
-    }
-  })
-  
-  // 用户输入时才过滤
-  input.addEventListener('input', () => {
-    isUserInput = true
-    selectedIndex = -1
-    if (!dropdown) showDropdown(true)
-    else {
-      const rect = input.getBoundingClientRect()
-      dropdown.style.left = rect.left + 'px'
-      dropdown.style.top = (rect.bottom + 2) + 'px'
-      dropdown.style.width = rect.width + 'px'
-    }
-    updateDropdown()
-  })
-  
-  input.addEventListener('keydown', (e) => {
-    if (!dropdown) return
-    const items = dropdown.querySelectorAll('.project-dropdown-item')
-    const count = items.length
-    
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      selectedIndex = Math.min(selectedIndex + 1, count - 1)
-      updateDropdown()
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      selectedIndex = Math.max(selectedIndex - 1, 0)
-      updateDropdown()
-    } else if (e.key === 'Enter' && selectedIndex >= 0) {
-      e.preventDefault()
-      const filtered = isUserInput 
-        ? projectNames.filter(p => p.name.toLowerCase().includes(input.value.toLowerCase()))
-        : projectNames
-      if (filtered[selectedIndex]) {
-        input.value = filtered[selectedIndex].name
-        isUserInput = false
-        hideDropdown()
-      }
-    } else if (e.key === 'Escape') {
-      hideDropdown()
-    }
-  })
-
-  input.addEventListener('blur', () => {
-    setTimeout(hideDropdown, 150)
-  })
-}
-
-function getProjectInfo(name) { return projectNames.find(p => p.name === name) }
-
-function buildMrUrl(mrBase, branchName, targetBranch) {
-  if (!mrBase) return ''
-  const target = targetBranch || launchBranch || 'master_launched'
-  let url = mrBase.replace(/\/+$/, '')
-  // 如果已经是 /merge_requests/new 结尾，直接加参数
-  if (url.includes('/merge_requests/new')) {
-    url = url.replace(/\?.*$/, '')
-  } else if (url.includes('/merge_requests')) {
-    url = url.replace(/\/merge_requests.*$/, '/merge_requests/new')
-  } else {
-    url += '/-/merge_requests/new'
-  }
-  return url + '?merge_request[source_branch]=' + encodeURIComponent(branchName) + '&merge_request[target_branch]=' + encodeURIComponent(target)
-}
-
-function buildBranchUrl(mrBase, refBranch) {
-  if (!mrBase) return ''
-  const ref = refBranch || 'master'
-  const now = new Date()
-  const mm = String(now.getMonth() + 1).padStart(2, '0')
-  const dd = String(now.getDate()).padStart(2, '0')
-  const branchName = 'master_' + mm + dd
-  let url = mrBase.replace(/\/+$/, '')
-  if (url.includes('/merge_requests')) {
-    url = url.replace(/\/merge_requests.*$/, '/branches/new')
-  } else {
-    url += '/-/branches/new'
-  }
-  return url + '?ref=' + encodeURIComponent(ref) + '&branch_name=' + encodeURIComponent(branchName)
-}
-
-function getProjectColorIndex(name) {
-  const idx = projectNames.findIndex(p => p.name === name)
-  return idx >= 0 ? idx % 30 : 0
-}
-
-// ============= Search =============
-function onSearch() {
-  const inp = document.getElementById('searchInput')
-  const clearBtn = document.getElementById('searchClear')
-  searchQuery = inp.value.trim().toLowerCase()
-  clearBtn.style.display = searchQuery ? 'block' : 'none'
-  render()
-}
-
-function clearSearch() {
-  document.getElementById('searchInput').value = ''
-  searchQuery = ''
-  document.getElementById('searchClear').style.display = 'none'
-  render()
-}
-
-function filterItems(arr) {
-  if (!searchQuery) return arr
-  return arr.filter(i => {
-    const nameMatch = i.name.toLowerCase().includes(searchQuery)
-    const linkMatch = i.link && i.link.toLowerCase().includes(searchQuery)
-    // 搜索项目分支名
-    const branchMatch = (i.projects && i.projects.some(p => p.branch && p.branch.toLowerCase().includes(searchQuery)))
-    // 搜索一同发版分支名
-    const syncBranchMatch = (i.syncBranches && i.syncBranches.some(sb => sb.branch && sb.branch.toLowerCase().includes(searchQuery)))
-    return nameMatch || linkMatch || branchMatch || syncBranchMatch
-  })
-}
-
-// ============= Toast =============
-let toastTimer
-function toast(msg) {
-  const el = document.getElementById('toast')
-  el.textContent = msg
-  el.classList.add('show')
-  clearTimeout(toastTimer)
-  toastTimer = setTimeout(() => el.classList.remove('show'), 1600)
-}
-
-// ============= Project Manager =============
-function toggleProjectMgr() {
-  const body = document.getElementById('pmBody')
-  const arrow = document.getElementById('pmArrow')
-  if (body.classList.contains('expanded')) {
-    body.classList.remove('expanded'); arrow.classList.remove('open')
-  } else {
-    body.classList.add('expanded'); arrow.classList.add('open')
-  }
-}
-
-let editingProjectIdx = -1
-
-function renderProjectMgr() {
-  if (editingProjectIdx >= 0 && editingProjectIdx < projectNames.length) {
-    const p = projectNames[editingProjectIdx]
-    document.getElementById('pmTagList').innerHTML = `
-      <div class="edit-row">
-        <input id="pmEditName" value="${escHtml(p.name)}" placeholder="项目名称" style="width:150px">
-        <input id="pmEditMr" value="${escHtml(p.mr || '')}" placeholder="MR 地址（可选）" style="width:260px">
-        <input id="pmEditPath" value="${escHtml(p.localPath || '')}" placeholder="本地路径（可选）" style="width:200px">
-        <button class="btn btn-success btn-sm" onclick="saveProjectEdit()" title="保存项目修改">保存</button>
-        <button class="btn btn-outline btn-sm" onclick="cancelProjectEdit()" title="取消编辑">取消</button>
-      </div>
-    `
-  } else {
-    document.getElementById('pmTagList').innerHTML = projectNames
-      .map((p, i) => {
-        const colorIdx = getProjectColorIndex(p.name)
-        return `<span class="tag-item"><span class="proj-name project-tag${p.mr ? ' has-mr' : ''}" data-color="${colorIdx}">${escHtml(p.name)}</span>${p.mr ? `<a class="mr-link" href="${escHtml(p.mr)}" target="_blank" title="打开 MR 页面">MR</a><a class="mr-link" href="${buildBranchUrl(p.mr, 'master').replace(/'/g, "\\'")}" target="_blank" title="新建分支（基于 master）" style="color:var(--cyan)">NB</a>` : ''}${p.localPath ? `<span class="path-tag" title="${escHtml(p.localPath)}">📁</span>` : ''}<button class="edit-btn" title="编辑项目" onclick="editProject(${i})">✏️</button><button class="del" title="删除项目" onclick="removeProjectName(${i})">×</button></span>`
-      }).join('')
-  }
-}
-
-function editProject(i) {
-  editingProjectIdx = i
-  renderProjectMgr()
-}
-
-function cancelProjectEdit() {
-  editingProjectIdx = -1
-  renderProjectMgr()
-}
-
-function saveProjectEdit() {
-  const nameInput = document.getElementById('pmEditName')
-  const mrInput = document.getElementById('pmEditMr')
-  const pathInput = document.getElementById('pmEditPath')
-  const newName = nameInput.value.trim()
-  const newMr = mrInput.value.trim()
-  const newPath = pathInput.value.trim()
-  if (!newName) { nameInput.focus(); return }
-  const oldName = projectNames[editingProjectIdx].name
-  if (newName !== oldName && projectNames.some(p => p.name === newName)) {
-    toast('项目名称已存在'); nameInput.focus(); return
-  }
-  projectNames[editingProjectIdx] = { name: newName, mr: newMr || '', localPath: newPath || '' }
-  editingProjectIdx = -1
-  updateProjectDatalist(); renderProjectMgr(); saveToLocalStorage()
-  toast('已更新 ' + newName)
-}
-
-function addProjectName() {
-  const input = document.getElementById('pmNewName')
-  const mrInput = document.getElementById('pmNewMr')
-  const pathInput = document.getElementById('pmNewPath')
-  const name = input.value.trim()
-  const mr = mrInput.value.trim()
-  const localPath = pathInput.value.trim()
-  if (!name) return
-  if (projectNames.some(p => p.name === name)) { input.value = ''; toast('项目已存在'); return }
-  projectNames.push({ name, mr: mr || '', localPath: localPath || '' })
-  input.value = ''; mrInput.value = ''; pathInput.value = ''
-  updateProjectDatalist(); renderProjectMgr(); saveToLocalStorage()
-  toast('已添加 ' + name)
-}
-
-function removeProjectName(i) {
-  const name = projectNames[i].name
-  projectNames.splice(i, 1)
-  if (editingProjectIdx === i) editingProjectIdx = -1
-  else if (editingProjectIdx > i) editingProjectIdx--
-  updateProjectDatalist(); renderProjectMgr(); saveToLocalStorage()
-  toast('已移除 ' + name)
-}
-
-// ============= Utilities =============
-function escHtml(str) {
-  if (!str) return ''
-  const div = document.createElement('div')
-  div.textContent = str
-  return div.innerHTML
-}
-
-function truncateBranch(name, maxLen) {
-  if (!name || name.length <= maxLen) return name
-  return name.substring(0, maxLen) + '...'
-}
-
-function escAttr(str) {
-  if (!str) return ''
-  return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
-
-function truncateUrl(url) {
-  if (!url) return ''
-  return url.length > 32 ? url.substring(0, 32) + '...' : url
-}
-
-function formatReleaseTime(date) {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  const h = String(date.getHours()).padStart(2, '0')
-  const min = String(date.getMinutes()).padStart(2, '0')
-  const s = String(date.getSeconds()).padStart(2, '0')
-  return `${y}-${m}-${d} ${h}:${min}:${s}`
-}
-
-function copyText(text) {
-  if (!text) return Promise.resolve()
-  return navigator.clipboard.writeText(text)
-    .then(() => toast('\u2713 ' + text))
-    .catch(() => {
-      const ta = document.createElement('textarea')
-      ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px'
-      document.body.appendChild(ta); ta.select()
-      document.execCommand('copy'); document.body.removeChild(ta)
-      toast('\u2713 ' + text)
-    })
-}
-
-// ============= Render =============
-function render() {
-  const pending = filterItems(items.filter(i => i.status === 'pending' || i.status === 'new'))
-  const releasing = filterItems(items.filter(i => i.status === 'releasing'))
-  const released = filterItems(items.filter(i => i.status === 'released'))
-
-  document.getElementById('pendingCount').textContent = pending.length || '0'
-  document.getElementById('releasingCount').textContent = releasing.length || '0'
-  document.getElementById('releasedCount').textContent = released.length || '0'
-
-  // 默认展开待发版
-  const pendingBody = document.getElementById('pendingBody')
-  const pendingArrow = document.getElementById('pendingArrow')
-  if (!pendingBody.classList.contains('expanded')) {
-    pendingBody.classList.add('expanded')
-    pendingArrow.classList.add('open')
-  }
-
-  // 发版中有数据时默认展开
-  const releasingBody = document.getElementById('releasingBody')
-  const releasingArrow = document.getElementById('releasingArrow')
-  if (releasing.length > 0 && !releasingBody.classList.contains('expanded')) {
-    releasingBody.classList.add('expanded')
-    releasingArrow.classList.add('open')
-  }
-
-  const pTbody = document.getElementById('pendingTbody')
-  const rlTbody = document.getElementById('releasingTbody')
-  const rTbody = document.getElementById('releasedTbody')
-  pTbody.innerHTML = ''; rlTbody.innerHTML = ''; rTbody.innerHTML = ''
-
-  addingItems.forEach(ai => {
-    const tr = createEditRow(ai, true)
-    tr.classList.add('edit-row')
-    pTbody.appendChild(tr)
-  })
-
-  const pEmpty = document.getElementById('pendingEmpty')
-  if (pending.length === 0 && addingItems.length === 0) {
-    pEmpty.style.display = 'block'
-  } else {
-    pEmpty.style.display = 'none'
-    pending.forEach((item) => {
-      const isNew = item._justAdded
-      if (isNew) delete item._justAdded
-      if (editingIds[item.id]) pTbody.appendChild(createEditRow(item, false))
-      else pTbody.appendChild(createDisplayRow(item, isNew, (isNew || item.status === 'new') ? 'test' : 'uat'))
-    })
-  }
-
-  // 发版中
-  const rlEmpty = document.getElementById('releasingEmpty')
-  if (releasing.length === 0) {
-    rlEmpty.style.display = 'block'
-  } else {
-    rlEmpty.style.display = 'none'
-    releasing.forEach(item => {
-      if (editingIds[item.id]) rlTbody.appendChild(createEditRow(item, false))
-      else rlTbody.appendChild(createDisplayRow(item, false, launchBranch || null))
-    })
-  }
-
-  // 已发版
-  const rEmpty = document.getElementById('releasedEmpty')
-  if (released.length === 0) {
-    rEmpty.style.display = 'block'
-  } else {
-    rEmpty.style.display = 'none'
-    released.forEach(item => {
-      if (editingIds[item.id]) rTbody.appendChild(createEditRow(item, false))
-      else rTbody.appendChild(createDisplayRow(item, false))
-    })
-  }
-
-  renderReleasingSummary(releasing)
-  document.getElementById('releaseAllDoneBtn').style.display = releasing.length > 0 ? '' : 'none'
-  updateTotalCount()
-}
-
-// 发版中标题旁总结项目类型，点击跳转 MR（源: 上线分支, 目标: master）
-function renderReleasingSummary(releasingItems) {
-  const summary = document.getElementById('releasingProjectSummary')
-  if (!summary) return
-  const projectSet = new Map()
-  releasingItems.forEach(item => {
-    if (item.projects) item.projects.forEach(p => {
-      if (p.name && !projectSet.has(p.name)) {
-        const info = getProjectInfo(p.name)
-        projectSet.set(p.name, info && info.mr ? info.mr : null)
-      }
-    })
-    if (item.syncBranches) item.syncBranches.forEach(sb => {
-      if (sb.project && !projectSet.has(sb.project)) {
-        const info = getProjectInfo(sb.project)
-        projectSet.set(sb.project, info && info.mr ? info.mr : null)
-      }
-    })
-  })
-  if (projectSet.size === 0) { summary.innerHTML = ''; return }
-  summary.innerHTML = '<span style="color:var(--text-muted)">发版项目：</span>' +
-    [...projectSet.entries()].map(([name, mr]) => {
-      const colorIdx = getProjectColorIndex(name)
-      let html = ''
-      if (mr) {
-        const srcBranch = launchBranch || findItemTargetBranch(releasingItems, name) || 'master_launched'
-        const mrUrl = buildMrUrl(mr, srcBranch, 'master')
-        html += `<span class="project-tag has-mr" data-color="${colorIdx}" style="cursor:pointer;font-size:11px" onclick="window.open('${mrUrl.replace(/'/g, "\\'")}','_blank')" title="创建发版 MR → master">${escHtml(name)}</span>`
-      } else {
-        html += `<span class="project-tag" data-color="${colorIdx}" style="font-size:11px">${escHtml(name)}</span>`
-      }
-      return html
-    }).join('')
-}
-
-function findItemTargetBranch(items, projectName) {
-  for (const item of items) {
-    if (item.targetBranches && item.targetBranches[projectName]) {
-      return item.targetBranches[projectName]
-    }
-  }
-  return null
-}
-
-function updateTotalCount() {
-  document.getElementById('totalCount').textContent = '共 ' + items.length + ' 条'
-}
-
-// ============= Display Row =============
-function createDisplayRow(item, animate, targetBranch) {
-  const tr = document.createElement('tr')
-  if (animate) tr.classList.add('row-fresh')
-  // 仅"待发版"表格（pending/new）支持右键编辑备注
-  const editable = item.status === 'pending' || item.status === 'new'
-
-  // Name
-  const tdName = document.createElement('td')
-  tdName.innerHTML = `<strong>${escHtml(item.name)}</strong>`
-  tr.appendChild(tdName)
-
-  // Status
-  const tdStatus = document.createElement('td')
-  tdStatus.innerHTML = item.status === 'new'
-    ? '<span class="status-tag status-new">新建</span>'
-    : item.status === 'pending'
-    ? '<span class="status-tag status-pending">待发版</span>'
-    : item.status === 'releasing'
-    ? '<span class="status-tag status-releasing">发版中</span>'
-    : '<span class="status-tag status-released">已发版</span>'
-  tr.appendChild(tdStatus)
-
-  // Link
-  const tdLink = document.createElement('td')
-  tdLink.innerHTML = item.link
-    ? `<a class="link" href="${escHtml(item.link)}" target="_blank" title="${escHtml(item.link)}">${truncateUrl(item.link)}</a>`
-    : '<span style="color:var(--text-muted)">-</span>'
-  tr.appendChild(tdLink)
-
-  // Projects
-  const tdProjects = document.createElement('td')
-  tdProjects.className = 'td-projects'
-  if (item.projects && item.projects.length > 0) {
-    item.projects.forEach((p, pi) => {
-      const wrapper = document.createElement('div')
-      wrapper.style.cssText = 'margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:nowrap;white-space:nowrap'
-      const info = getProjectInfo(p.name)
-      const projTag = document.createElement('span')
-      const colorIdx = getProjectColorIndex(p.name)
-      projTag.className = 'project-tag' + (info && info.mr ? ' has-mr' : '')
-      projTag.setAttribute('data-color', colorIdx)
-      projTag.textContent = p.name
-      if (info && info.mr) {
-        projTag.style.cursor = 'pointer'
-        projTag.title = '点击跳转 MR'
-        projTag.onclick = e => { e.stopPropagation(); window.open(info.mr,'_blank') }
-      }
-      wrapper.appendChild(projTag)
-
-      if (p.branch) {
-        const branchTag = document.createElement('span')
-        branchTag.className = 'branch-tag'
-        const lbl = document.createElement('span')
-        lbl.className = 'branch-text'
-        lbl.textContent = truncateBranch(p.branch, 40)
-        lbl.title = (info && info.mr) ? '\uD83D\uDD17 ' + p.branch : p.branch
-        lbl.onclick = e => {
-          e.stopPropagation()
-          if (info && info.mr) { const t = targetBranch || (item.targetBranches && item.targetBranches[p.name]) || null; copyText(p.branch).then(() => setTimeout(()=>window.open(buildMrUrl(info.mr, p.branch, t),'_blank'),250)) }
-          else copyText(p.branch)
-        }
-        branchTag.appendChild(lbl)
-        const cp = document.createElement('button')
-        cp.className = 'copy-btn'; cp.textContent = '\uD83D\uDCCB'; cp.title = '复制'
-        cp.onclick = e => { e.stopPropagation(); copyText(p.branch) }
-        branchTag.appendChild(cp)
-        wrapper.appendChild(branchTag)
-      }
-
-      // Note button (only show if has notes in display mode)
-      if (p.notes) {
-        const noteBtn = document.createElement('button')
-        noteBtn.className = 'note-btn has-notes'
-        noteBtn.textContent = '\uD83D\uDCDD'
-        noteBtn.title = '查看备注'
-        noteBtn.dataset.itemId = item.id
-        noteBtn.dataset.projIndex = pi
-        noteBtn.dataset.field = 'project'
-        noteBtn.onclick = e => { e.stopPropagation(); openNoteDialog(item.id, pi, 'project') }
-        wrapper.appendChild(noteBtn)
-      }
-
-      if (editable) {
-        wrapper.style.cursor = 'context-menu'
-        wrapper.oncontextmenu = e => showBranchContextMenu(e, item.id, pi, 'project')
-      }
-
-      tdProjects.appendChild(wrapper)
-    })
-  } else {
-    tdProjects.innerHTML = '<span style="color:var(--text-muted)">-</span>'
-  }
-  tr.appendChild(tdProjects)
-
-  // Sync branches
-  const tdSync = document.createElement('td')
-  if (item.syncBranches && item.syncBranches.length > 0) {
-    item.syncBranches.forEach((sb, sbi) => {
-      const wrapper = document.createElement('div')
-      wrapper.style.cssText = 'margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:nowrap;white-space:nowrap'
-      const info = getProjectInfo(sb.project)
-      if (sb.project) {
-        const projTag = document.createElement('span')
-        const colorIdx = getProjectColorIndex(sb.project)
-        projTag.className = 'project-tag' + (info && info.mr ? ' has-mr' : '')
-        projTag.setAttribute('data-color', colorIdx)
-        projTag.textContent = sb.project
-        if (info && info.mr) {
-          projTag.style.cursor = 'pointer'
-          projTag.title = '点击跳转 MR'
-          projTag.onclick = e => { e.stopPropagation(); window.open(info.mr,'_blank') }
-        }
-        wrapper.appendChild(projTag)
-      }
-      if (sb.branch) {
-        const branchTag = document.createElement('span')
-        branchTag.className = 'branch-tag'
-        const lbl = document.createElement('span')
-        lbl.className = 'branch-text'; lbl.textContent = truncateBranch(sb.branch, 40)
-        lbl.title = (info && info.mr) ? '\uD83D\uDD17 ' + sb.branch : sb.branch
-        lbl.onclick = e => {
-          e.stopPropagation()
-          if (info && info.mr) { const t = targetBranch || (item.targetBranches && item.targetBranches[sb.project]) || null; copyText(sb.branch).then(() => setTimeout(()=>window.open(buildMrUrl(info.mr, sb.branch, t),'_blank'),250)) }
-          else copyText(sb.branch)
-        }
-        branchTag.appendChild(lbl)
-        const cp = document.createElement('button')
-        cp.className = 'copy-btn'; cp.textContent = '\uD83D\uDCCB'; cp.title = '复制'
-        cp.onclick = e => { e.stopPropagation(); copyText(sb.branch) }
-        branchTag.appendChild(cp)
-        wrapper.appendChild(branchTag)
-      }
-
-      // Note button (only show if has notes in display mode)
-      if (sb.notes) {
-        const noteBtn = document.createElement('button')
-        noteBtn.className = 'note-btn has-notes'
-        noteBtn.textContent = '\uD83D\uDCDD'
-        noteBtn.title = '查看备注'
-        noteBtn.dataset.itemId = item.id
-        noteBtn.dataset.projIndex = sbi
-        noteBtn.dataset.field = 'sync'
-        noteBtn.onclick = e => { e.stopPropagation(); openNoteDialog(item.id, sbi, 'sync') }
-        wrapper.appendChild(noteBtn)
-      }
-
-      if (editable) {
-        wrapper.style.cursor = 'context-menu'
-        wrapper.oncontextmenu = e => showBranchContextMenu(e, item.id, sbi, 'sync')
-      }
-
-      tdSync.appendChild(wrapper)
-    })
-  } else {
-    tdSync.innerHTML = '<span style="color:var(--text-muted)">-</span>'
-  }
-  tr.appendChild(tdSync)
-
-  // Release time (only for released items)
-  if (item.status === 'released') {
-    const tdReleaseTime = document.createElement('td')
-    tdReleaseTime.style.cssText = 'font-size:11px;color:var(--text-muted);white-space:nowrap'
-    tdReleaseTime.textContent = item.releaseTime || '-'
-    tr.appendChild(tdReleaseTime)
-  }
-
-  // Actions
-  const tdAction = document.createElement('td')
-  tdAction.className = 'action-btns'
-  if (item.status === 'new') {
-    tdAction.innerHTML = `<button class="btn btn-info btn-xs" data-action="edit" title="编辑需求">编辑</button>
-    <button class="btn btn-warning btn-xs" data-action="markPending" title="将该需求移至待发版">设为待发版</button>
-    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
-  } else if (item.status === 'pending') {
-    tdAction.innerHTML = `<button class="btn btn-info btn-xs" data-action="edit" title="编辑需求">编辑</button>
-    <button class="btn btn-purple btn-xs" data-action="release" title="将该需求开始发版">发版</button>
-    <button class="btn btn-secondary btn-xs" data-action="revertNew" title="退回新建状态">回退新建</button>
-    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
-  } else if (item.status === 'releasing') {
-    tdAction.innerHTML = `<button class="btn btn-success btn-xs" data-action="releaseToReleased" title="标记发版完成">标记已发版</button>
-    <button class="btn btn-warning btn-xs" data-action="unrelease" title="恢复到待发版状态">恢复待发版</button>
-    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
-  } else {
-    tdAction.innerHTML = `<button class="btn btn-warning btn-xs" data-action="unrelease" title="恢复到待发版状态">恢复待发版</button>
-    <button class="btn btn-danger btn-xs" data-action="delete" title="删除该需求">删</button>`
-  }
-  tdAction.addEventListener('click', e => handleAction(e, item.id))
-  tr.appendChild(tdAction)
-  return tr
-}
-
-// ============= Edit Row =============
-function createEditRow(item, isNew) {
-  const tr = document.createElement('tr')
-
-  const tdName = document.createElement('td')
-  const nameInput = document.createElement('input')
-  nameInput.className = 'inline-input'; nameInput.placeholder = '需求名称（必填）'
-  nameInput.value = item.name || ''; nameInput.dataset.field = 'name'
-  tdName.appendChild(nameInput); tr.appendChild(tdName)
-
-  // Status (read-only in edit mode)
-  const tdStatus = document.createElement('td')
-  tdStatus.innerHTML = item.status === 'new'
-    ? '<span class="status-tag status-new">新建</span>'
-    : item.status === 'pending'
-    ? '<span class="status-tag status-pending">待发版</span>'
-    : item.status === 'releasing'
-    ? '<span class="status-tag status-releasing">发版中</span>'
-    : '<span class="status-tag status-released">已发版</span>'
-  tr.appendChild(tdStatus)
-
-  const tdLink = document.createElement('td')
-  const linkInput = document.createElement('input')
-  linkInput.className = 'inline-input'; linkInput.placeholder = '需求链接'
-  linkInput.value = item.link || ''; linkInput.dataset.field = 'link'
-  tdLink.appendChild(linkInput); tr.appendChild(tdLink)
-
-  // Projects
-  const tdProjects = document.createElement('td')
-  tdProjects.className = 'td-projects'; tdProjects.style.minWidth = '340px'
-  const pairsContainer = document.createElement('div')
-  pairsContainer.id = 'pairs-' + item.id
-
-  const addPairRow = (proj, branch, notes) => {
-    const row = document.createElement('div'); row.className = 'pair-row'
-    row.innerHTML = `<input placeholder="项目名" size="10" data-role="projectName" value="${escHtml(proj||'')}" autocomplete="off"><input placeholder="分支名" size="14" data-role="projectBranch" value="${escHtml(branch||'')}" oninput="this.value=this.value.replace(/\s/g,'');this.title=this.value"><button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支">📂</button><button class="btn btn-outline btn-xs note-btn edit-note-btn${notes ? ' has-notes' : ''}" title="${notes ? '编辑备注' : '添加备注'}" data-role="editNote" data-notes="${escAttr(notes||'')}">📝</button><button class="btn btn-danger btn-xs" title="移除此行">×</button>`
-    row.querySelector('.btn-danger').onclick = () => row.remove()
-    row.querySelector('.branch-lookup-btn').onclick = () => openBranchLookup(row.querySelector('[data-role="projectBranch"]'), row.querySelector('[data-role="projectName"]'))
-    row.querySelector('[data-role="editNote"]').onclick = () => {
-      const projName = row.querySelector('[data-role="projectName"]').value.trim()
-      if (!projName) { toast('请先输入项目名'); return }
-      const branchName = row.querySelector('[data-role="projectBranch"]').value.trim()
-      openInlineNoteDialog(row.querySelector('[data-role="editNote"]'), projName, branchName)
-    }
-    // 添加项目下拉功能
-    const projInput = row.querySelector('[data-role="projectName"]')
-    setupProjectDropdown(projInput)
-    pairsContainer.appendChild(row)
-  }
-
-  const addBtn = document.createElement('button')
-  addBtn.className = 'btn btn-outline btn-xs'; addBtn.textContent = '+ 添加分支'
-  addBtn.style.marginTop = '4px'; addBtn.onclick = () => addPairRow('', '', '')
-
-  tdProjects.appendChild(pairsContainer); tdProjects.appendChild(addBtn)
-  if (item.projects && item.projects.length > 0) item.projects.forEach(p => addPairRow(p.name, p.branch, p.notes))
-  if ((!item.projects || item.projects.length === 0) && !isNew) addPairRow('', '', '')
-  tr.appendChild(tdProjects)
-
-  // Sync branches
-  const tdSync = document.createElement('td')
-  const syncContainer = document.createElement('div')
-
-  const addSyncRow = (proj, branch, notes) => {
-    const row = document.createElement('div'); row.className = 'pair-row'
-    row.innerHTML = `<input placeholder="项目名" size="10" data-role="syncProjectName" value="${escHtml(proj||'')}" autocomplete="off"><input placeholder="分支名" size="14" data-role="syncBranchName" value="${escHtml(branch||'')}" oninput="this.value=this.value.replace(/\s/g,'');this.title=this.value"><button class="btn btn-outline btn-xs branch-lookup-btn" title="查看该项目所有分支">📂</button><button class="btn btn-outline btn-xs note-btn edit-note-btn${notes ? ' has-notes' : ''}" title="${notes ? '编辑备注' : '添加备注'}" data-role="editNote" data-notes="${escAttr(notes||'')}">📝</button><button class="btn btn-danger btn-xs" title="移除此行">×</button>`
-    row.querySelector('.btn-danger').onclick = () => row.remove()
-    row.querySelector('.branch-lookup-btn').onclick = () => openBranchLookup(row.querySelector('[data-role="syncBranchName"]'), row.querySelector('[data-role="syncProjectName"]'))
-    row.querySelector('[data-role="editNote"]').onclick = () => {
-      const projName = row.querySelector('[data-role="syncProjectName"]').value.trim()
-      if (!projName) { toast('请先输入项目名'); return }
-      const branchName = row.querySelector('[data-role="syncBranchName"]').value.trim()
-      openInlineNoteDialog(row.querySelector('[data-role="editNote"]'), projName, branchName)
-    }
-    // 添加项目下拉功能
-    const projInput = row.querySelector('[data-role="syncProjectName"]')
-    setupProjectDropdown(projInput)
-    syncContainer.appendChild(row)
-  }
-
-  const addSyncBtn = document.createElement('button')
-  addSyncBtn.className = 'btn btn-outline btn-xs'; addSyncBtn.textContent = '+ 添加一同发版分支'
-  addSyncBtn.style.marginTop = '4px'; addSyncBtn.onclick = () => addSyncRow('', '', '')
-
-  if (item.syncBranches && item.syncBranches.length > 0) item.syncBranches.forEach(sb => addSyncRow(sb.project, sb.branch, sb.notes))
-  tdSync.appendChild(syncContainer); tdSync.appendChild(addSyncBtn)
-  tr.appendChild(tdSync)
-
-  // Release time (only for released items in edit mode)
-  if (item.status === 'released') {
-    const tdReleaseTime = document.createElement('td')
-    tdReleaseTime.style.cssText = 'font-size:11px;color:var(--text-muted);white-space:nowrap'
-    tdReleaseTime.textContent = item.releaseTime || '-'
-    tr.appendChild(tdReleaseTime)
-  }
-
-  // Actions
-  const tdAction = document.createElement('td')
-  tdAction.className = 'action-btns'
-  tdAction.innerHTML = `<button class="btn btn-success btn-xs" data-action="save" title="保存修改">保存</button>
-  <button class="btn btn-secondary btn-xs" data-action="cancel" title="取消编辑">取消</button>`
-  tdAction.addEventListener('click', e => handleAction(e, item.id))
-  tr.appendChild(tdAction)
-  return tr
-}
-
-// ============= Collect =============
-function collectEditRowData(itemId) {
-  const pairs = document.getElementById('pairs-' + itemId)
-  const tr = pairs ? pairs.closest('tr') : document.querySelector('tr.edit-row')
-  if (!tr) return null
-
-  const name = (tr.querySelector('[data-field=name]')?.value || '').trim()
-  const link = (tr.querySelector('[data-field=link]')?.value || '').trim()
-
-  const projects = []
-  const pc = document.getElementById('pairs-' + itemId)
-  if (pc) pc.querySelectorAll('.pair-row').forEach(row => {
-    const n = (row.querySelector('[data-role=projectName]')?.value || '').trim()
-    const b = (row.querySelector('[data-role=projectBranch]')?.value || '').trim()
-    const notesBtn = row.querySelector('[data-role="editNote"]')
-    const notes = notesBtn ? (notesBtn.dataset.notes || '') : ''
-    if (n) projects.push({ name: n, branch: b, notes })
-  })
-
-  const syncBranches = []
-  tr.querySelectorAll('[data-role=syncProjectName]').forEach(projInp => {
-    const row = projInp.closest('.pair-row')
-    const branchInp = row ? row.querySelector('[data-role=syncBranchName]') : null
-    const p = projInp.value.trim()
-    const b = branchInp ? branchInp.value.trim() : ''
-    const notesBtn = row ? row.querySelector('[data-role="editNote"]') : null
-    const notes = notesBtn ? (notesBtn.dataset.notes || '') : ''
-    if (b) syncBranches.push({ project: p, branch: b, notes })
-  })
-
-  return { name, link, projects, syncBranches }
-}
-
-// ============= Actions =============
-function handleAction(e, itemId) {
-  const btn = e.target.closest('button')
-  if (!btn) return
-  const action = btn.dataset.action
-  e.stopPropagation()
-
-  switch (action) {
-    case 'edit': {
-      const item = items.find(i => i.id === itemId)
-      if (item && (item.status === 'releasing' || item.status === 'released')) { toast('发版中/已发版不支持编辑'); break }
-      editingIds[itemId] = true; render(); break
-    }
-    case 'save': {
-      const data = collectEditRowData(itemId)
-      if (!data || !data.name) { toast('请输入需求名称'); return }
-      if (itemId.startsWith('__add_')) {
-        const newItem = {
-          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-          name: data.name, link: data.link, status: 'new',
-          projects: data.projects, syncBranches: data.syncBranches,
-          _justAdded: true
-        }
-        items.unshift(newItem)
-        addingItems = addingItems.filter(a => a.id !== itemId)
-      } else {
-        const item = items.find(i => i.id === itemId)
-        if (item) Object.assign(item, { name: data.name, link: data.link, projects: data.projects, syncBranches: data.syncBranches })
-        delete editingIds[itemId]
-        toast('已保存')
-      }
-      saveToLocalStorage(); render(); break
-    }
-    case 'cancel':
-      if (itemId.startsWith('__add_')) addingItems = addingItems.filter(a => a.id !== itemId)
-      else delete editingIds[itemId]
-      render(); break
-    case 'release': {
-      const item = items.find(i => i.id === itemId)
-      if (!item) break
-      // 检查是否已设置上线分支
-      if (!launchBranch) {
-        pendingReleaseItemId = itemId
-        if (showLaunchBranchPrompt(item)) break // 弹窗已显示，等待填写
-        // 所有项目已有上线分支，直接继承
-        item.targetBranches = getReleasedProjectTargets()
-      }
-      if (item) {
-        item.status = 'releasing'
-        item.releaseTime = formatReleaseTime(new Date())
-        toast('\u2713 已开始发版：' + item.name)
-      }
-      saveToLocalStorage(); render(); break
-    }
-    case 'releaseToReleased': {
-      const item = items.find(i => i.id === itemId)
-      if (item) {
-        item.status = 'released'
-        item.releaseTime = formatReleaseTime(new Date())
-        toast('\u2713 已发版：' + item.name)
-      }
-      saveToLocalStorage(); render(); break
-    }
-    case 'markPending': {
-      const item = items.find(i => i.id === itemId)
-      if (item) { item.status = 'pending'; toast('已设为待发版：' + item.name) }
-      saveToLocalStorage(); render(); break
-    }
-    case 'revertNew': {
-      const item = items.find(i => i.id === itemId)
-      if (item) { item.status = 'new'; toast('已回退新建：' + item.name) }
-      saveToLocalStorage(); render(); break
-    }
-    case 'unrelease': {
-      const item = items.find(i => i.id === itemId)
-      if (item) { item.status = 'pending'; delete item.releaseTime; toast('已恢复待发版：' + item.name) }
-      saveToLocalStorage(); render(); break
-    }
-    case 'delete': showConfirm(itemId); break
-  }
-}
-
-function startAdding() {
-  addingItems.push({
-    id: '__add_' + addingCounter++, name: '', link: '',
-    status: 'new', projects: [], syncBranches: []
-  })
-  render()
-}
-
-function releaseAll() {
-  const pending = items.filter(i => i.status === 'pending')
-  if (pending.length === 0) { toast('没有待发版的需求'); return }
-  if (!launchBranch) {
-    pendingReleaseItemId = '__all__'
-    if (showBatchLaunchPrompt(pending)) return // 弹窗已显示，等待填写
-    // 所有项目已有上线分支，直接继承
-  }
-  const existingTargets = getReleasedProjectTargets()
-  const releaseTime = formatReleaseTime(new Date())
-  pending.forEach(i => { i.status = 'releasing'; i.releaseTime = releaseTime; i.targetBranches = existingTargets })
-  saveToLocalStorage(); render()
-  toast('已全部开始发版（' + pending.length + ' 条）')
-}
-
-function releaseAllToDone() {
-  const releasing = items.filter(i => i.status === 'releasing')
-  if (releasing.length === 0) { toast('没有发版中的需求'); return }
-  const releaseTime = formatReleaseTime(new Date())
-  releasing.forEach(i => { i.status = 'released'; i.releaseTime = releaseTime })
-  saveToLocalStorage(); render()
-  toast('已全部完成发版（' + releasing.length + ' 条）')
-}
-
-// ============= Confirm =============
-let pendingDeleteId = null
-let pendingReleaseItemId = null
-
-// 保存上线分支名（全局）
-function saveLaunchBranchName() {
-  const val = document.getElementById('pmLaunchBranch').value.trim()
-  launchBranch = val
-  saveLaunchBranch()
-  render()
-  if (val) toast('上线分支已设为：' + launchBranch)
-  else toast('已清除上线分支')
-}
-
-// 获取发版中已有目标分支的项目集合
-function getReleasedProjectTargets() {
-  const targets = {}
-  const released = items.filter(i => i.status === 'releasing')
-  released.forEach(item => {
-    if (item.targetBranches) {
-      Object.entries(item.targetBranches).forEach(([k, v]) => { targets[k] = v })
-    }
-  })
-  return targets
-}
-
-// 弹出批量发版项目上线分支填写弹窗
-function showBatchLaunchPrompt(pendingItems) {
-  const msg = document.getElementById('launchBranchMsg')
-  const list = document.getElementById('launchBranchProjectList')
-  msg.textContent = '批量发版（共 ' + pendingItems.length + ' 条需求）'
-
-  const existingTargets = getReleasedProjectTargets()
-
-  const projects = []
-  const seen = new Set()
-  pendingItems.forEach(item => {
-    if (item.projects) item.projects.forEach(p => {
-      if (p.name && !seen.has(p.name) && !existingTargets[p.name]) { seen.add(p.name); projects.push(p.name) }
-    })
-    if (item.syncBranches) item.syncBranches.forEach(sb => {
-      if (sb.project && !seen.has(sb.project) && !existingTargets[sb.project]) { seen.add(sb.project); projects.push(sb.project) }
-    })
-  })
-
-  if (projects.length === 0) return false // 全部已有，无需弹窗
-
-  renderLaunchProjectList(list, projects)
-  document.getElementById('launchBranchOverlay').style.display = 'flex'
-  setTimeout(() => {
-    const first = list.querySelector('.launch-target-input')
-    if (first) first.focus()
-  }, 100)
-  return true
-}
-
-// 弹出需求项目上线分支填写弹窗
-function showLaunchBranchPrompt(item) {
-  const msg = document.getElementById('launchBranchMsg')
-  const list = document.getElementById('launchBranchProjectList')
-  msg.textContent = '需求：' + item.name
-
-  const existingTargets = getReleasedProjectTargets()
-
-  const projects = []
-  const seen = new Set()
-  if (item.projects) item.projects.forEach(p => {
-    if (p.name && !seen.has(p.name) && !existingTargets[p.name]) { seen.add(p.name); projects.push(p.name) }
-  })
-  if (item.syncBranches) item.syncBranches.forEach(sb => {
-    if (sb.project && !seen.has(sb.project) && !existingTargets[sb.project]) { seen.add(sb.project); projects.push(sb.project) }
-  })
-  if (projects.length === 0) return false // 全部已有，无需弹窗
-
-  renderLaunchProjectList(list, projects)
-  document.getElementById('launchBranchOverlay').style.display = 'flex'
-  setTimeout(() => {
-    const first = list.querySelector('.launch-target-input')
-    if (first) first.focus()
-  }, 100)
-  return true
-}
-
-function renderLaunchProjectList(list, projects) {
-  list.innerHTML = projects.map((name) => {
-    const colorIdx = getProjectColorIndex(name)
-    const info = getProjectInfo(name)
-    const defaultTarget = ''
-    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light)">
-      <span class="project-tag" data-color="${colorIdx}" style="font-size:11px;flex-shrink:0;min-width:80px;text-align:center">${escHtml(name)}</span>
-      <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">→</span>
-      <input class="launch-target-input" data-project="${escHtml(name)}" placeholder="目标分支" value="${escHtml(defaultTarget)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px" onkeydown="if(event.key==='Enter')confirmLaunchBranch()" />
-    </div>`
-  }).join('')
-}
-
-// 从发版弹窗确认
-function confirmLaunchBranch() {
-  const inputs = document.querySelectorAll('#launchBranchProjectList .launch-target-input')
-  const targetBranches = {}
-  let allFilled = true
-  inputs.forEach(inp => {
-    const val = inp.value.trim()
-    const project = inp.dataset.project
-    if (!val) { allFilled = false; inp.style.borderColor = 'var(--danger)'; return }
-    inp.style.borderColor = 'var(--border)'
-    targetBranches[project] = val
-  })
-  if (!allFilled) { toast('请填写所有项目的目标分支'); return }
-
-  // 合并其他发版中已填写过的目标分支（弹窗中跳过的项目）
-  const existingTargets = getReleasedProjectTargets()
-  const mergedTargets = { ...existingTargets, ...targetBranches }
-
-  document.getElementById('launchBranchOverlay').style.display = 'none'
-
-  if (pendingReleaseItemId === '__all__') {
-    const pending = items.filter(i => i.status === 'pending')
-    const releaseTime = formatReleaseTime(new Date())
-    pending.forEach(i => { i.status = 'releasing'; i.releaseTime = releaseTime; i.targetBranches = mergedTargets })
-    saveToLocalStorage(); render()
-    toast('已全部开始发版（' + pending.length + ' 条）')
-  } else if (pendingReleaseItemId) {
-    const item = items.find(i => i.id === pendingReleaseItemId)
-    if (item) {
-      item.targetBranches = mergedTargets
-      item.status = 'releasing'
-      item.releaseTime = formatReleaseTime(new Date())
-      toast('\u2713 已开始发版：' + item.name)
-    }
-    saveToLocalStorage(); render()
-  }
-  pendingReleaseItemId = null
-}
-
-function closeLaunchBranchPrompt() {
-  document.getElementById('launchBranchOverlay').style.display = 'none'
-  pendingReleaseItemId = null
-}
-
-function showConfirm(id) {
-  pendingDeleteId = id
-  const item = items.find(i => i.id === id)
-  document.getElementById('confirmMsg').textContent = item ? '需求：' + item.name : ''
-  document.getElementById('confirmOverlay').style.display = 'flex'
-}
-
-function closeConfirm() {
-  pendingDeleteId = null
-  document.getElementById('confirmOverlay').style.display = 'none'
-}
-
-document.getElementById('confirmOkBtn').onclick = () => {
-  if (!pendingDeleteId) return
-  const item = items.find(i => i.id === pendingDeleteId)
-  const name = item ? item.name : ''
-  items = items.filter(i => i.id !== pendingDeleteId)
-  saveToLocalStorage(); closeConfirm(); render()
-  toast('已删除：' + name)
-}
-
-document.getElementById('confirmOverlay').onclick = e => {
-  if (e.target === document.getElementById('confirmOverlay')) closeConfirm()
-}
-
-document.getElementById('launchBranchOverlay').onclick = e => {
-  if (e.target === document.getElementById('launchBranchOverlay')) closeLaunchBranchPrompt()
-}
-
-// ============= Collapse =============
-function togglePending() {
-  const body = document.getElementById('pendingBody')
-  const arrow = document.getElementById('pendingArrow')
-  if (body.classList.contains('expanded')) {
-    body.classList.remove('expanded'); arrow.classList.remove('open')
-  } else {
-    body.classList.add('expanded'); arrow.classList.add('open')
-  }
-}
-
-function toggleReleasing() {
-  const body = document.getElementById('releasingBody')
-  const arrow = document.getElementById('releasingArrow')
-  if (body.classList.contains('expanded')) {
-    body.classList.remove('expanded'); arrow.classList.remove('open')
-  } else {
-    body.classList.add('expanded'); arrow.classList.add('open')
-  }
-}
-
-function toggleReleased() {
-  const body = document.getElementById('releasedBody')
-  const arrow = document.getElementById('releasedArrow')
-  if (body.classList.contains('expanded')) {
-    body.classList.remove('expanded'); arrow.classList.remove('open')
-  } else {
-    body.classList.add('expanded'); arrow.classList.add('open')
-  }
-}
-
-// ============= Keyboard =============
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); startAdding() }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-    e.preventDefault()
-    document.getElementById('searchInput').focus()
-  }
-  if (e.key === 'Escape') {
-    closeBranchContextMenu()
-    if (document.getElementById('noteOverlay').style.display === 'flex') closeNoteDialog()
-    if (document.getElementById('confirmOverlay').style.display === 'flex') closeConfirm()
-    if (document.getElementById('launchBranchOverlay').style.display === 'flex') closeLaunchBranchPrompt()
-    if (searchQuery) clearSearch()
-  }
-})
-
-// ============= Daily reminder =============
-function getTodayStr() {
-  const d = new Date()
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
-}
-
-function checkDailyReminder() {
-  const lastDate = localStorage.getItem('todo_last_remind_date')
-  if (lastDate !== getTodayStr()) {
-    document.getElementById('reminderOverlay').classList.add('show')
-  }
-}
-
-function dismissReminder() {
-  document.getElementById('reminderOverlay').classList.remove('show')
-  localStorage.setItem('todo_last_remind_date', getTodayStr())
-}
-
-function exportAndDismiss() {
-  exportToFile()
-  dismissReminder()
-}
-
-// 自动后台获取分支（每天最多一次）
-async function autoFetchBranches() {
-  const lastFetchDate = localStorage.getItem('todo_last_branch_fetch_date')
-  if (lastFetchDate === getTodayStr()) return
-
-  const projectsWithPath = projectNames.filter(p => p.localPath)
-  if (projectsWithPath.length === 0) return
-
-  // 检查服务器是否运行
-  try {
-    const resp = await fetch('http://localhost:' + API_PORT + '/api/git-user')
-    if (!resp.ok) return
-  } catch (e) { return }
-
-  // 获取 git 用户名
-  let gitUser = null
-  try {
-    const userRes = await fetch('http://localhost:' + API_PORT + '/api/git-user')
-    const userData = await userRes.json()
-    gitUser = userData.user
-  } catch (e) {}
-
-  // 显示进度条
-  const progressEl = document.getElementById('branchProgress')
-  const progressBar = document.getElementById('branchProgressBar')
-  const progressText = document.getElementById('branchProgressText')
-  const total = projectsWithPath.length
-  progressEl.style.display = 'block'
-  progressBar.style.width = '0%'
-  progressText.textContent = `0/${total}`
-
-  let done = 0
-  for (const project of projectsWithPath) {
-    try {
-      const url = `http://localhost:${API_PORT}/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
-      const res = await fetch(url)
-      const data = await res.json()
-      if (!data.error && data.branches) {
-        branchesCache[project.name] = { branches: data.branches, timestamp: Date.now() }
-      }
-    } catch (e) {}
-    done++
-    progressBar.style.width = `${(done / total) * 100}%`
-    progressText.textContent = `${done}/${total}`
-  }
-
-  // 记录已获取日期，隐藏进度条
-  localStorage.setItem('todo_last_branch_fetch_date', getTodayStr())
-  saveBranchCache()
-  setTimeout(() => { progressEl.style.display = 'none' }, 800)
-}
-
-// 在表格行中点击按钮——打开单个项目的分支弹窗，点击填充
-async function openBranchLookup(branchInput, projInput) {
-  const projectName = (projInput ? projInput.value : '').trim()
-  if (!projectName) { toast('请先输入项目名'); return }
-
-  const project = projectNames.find(p => p.name === projectName)
-  if (!project || !project.localPath) { toast('该项目未配置本地路径'); return }
-
-  // 先检查缓存
-  const cached = branchesCache[projectName]
-  if (cached && cached.branches && cached.branches.length > 0) {
-    const filtered = cached.branches.filter(b => b.branch && b.branch !== 'origin' && !b.branch.startsWith('origin/'))
-    showBranchLookupPopup(branchInput, project, filtered)
-    return
-  }
-
-  // 检查服务器
-  try {
-    const resp = await fetch('http://localhost:' + API_PORT + '/api/git-user')
-    if (!resp.ok) throw new Error('服务器未响应')
-  } catch (e) {
-    toast('请先启动服务器: node server.js')
-    return
-  }
-
-  toast('正在获取分支...')
-
-  let gitUser = null
-  try {
-    const userRes = await fetch('http://localhost:' + API_PORT + '/api/git-user')
-    const userData = await userRes.json()
-    gitUser = userData.user
-  } catch (e) {}
-
-  let branches = []
-  try {
-    const url = `http://localhost:${API_PORT}/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
-    const res = await fetch(url)
-    const data = await res.json()
-    if (data.branches) {
-      branches = data.branches
-      branchesCache[projectName] = { branches: data.branches, timestamp: Date.now() }
-      saveBranchCache()
-    }
-  } catch (e) {}
-
-  showBranchLookupPopup(branchInput, project, branches)
-}
-
-// 收集所有已发布需求中的分支（项目名→分支名集合）
-function getReleasedBranchSet() {
-  const released = items.filter(i => i.status === 'released')
-  const set = new Set()
-  released.forEach(item => {
-    if (item.projects) item.projects.forEach(p => {
-      if (p.name && p.branch) set.add(p.name + '\x00' + p.branch.trim())
-    })
-    if (item.syncBranches) item.syncBranches.forEach(sb => {
-      if (sb.project && sb.branch) set.add(sb.project + '\x00' + sb.branch.trim())
-    })
-  })
-  return set
-}
-
-// 渲染分支查找弹窗
-function showBranchLookupPopup(branchInput, project, branches) {
-  const overlay = document.createElement('div')
-  overlay.className = 'branch-overlay'
-  overlay._targetInput = branchInput
-  overlay._branches = branches
-  overlay._project = project
-  const releasedSet = getReleasedBranchSet()
-  const releasedClass = (b) => releasedSet.has(project.name + '\x00' + (b.branch || '').trim()) ? ' released-branch' : ''
-  overlay.innerHTML = `
-    <div class="branch-modal" style="max-width:500px">
-      <div class="branch-header">
-        <h3>${escHtml(project.name)} 分支列表</h3>
-        <input class="header-search" placeholder="搜索分支..." oninput="filterBranchPopup(this)">
-        <button class="btn-close" onclick="this.closest('.branch-overlay').remove()" title="关闭">×</button>
-      </div>
-      <div class="branch-content" id="branchPopupContent">
-        <div class="branch-project">
-          <div class="branch-project-name">${escHtml(project.name)} <span class="branch-count">${branches.length}个分支</span></div>
-          <div class="branch-list" id="branchPopupList">
-            ${branches.length > 0 ? branches.map(b => `
-              <div class="branch-item${releasedClass(b)}" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
-                <span class="branch-name">${escHtml(b.branch)}</span>
-                <span class="branch-date">${b.date}</span>
-                <span class="branch-author">${escHtml(b.author)}</span>
-              </div>
-            `).join('') : '<div class="branch-empty">未找到分支</div>'}
+<!-- Branch lookup modal -->
+<div class="branch-overlay" v-if="branchModal.visible" @click.self="branchModal.visible=false">
+  <div class="branch-modal">
+    <div class="branch-header">
+      <h3>{{branchModal.project}} 分支列表</h3>
+      <input class="header-search" v-model="branchModal.search" placeholder="搜索分支...">
+      <button class="btn-close" @click="branchModal.visible=false">×</button>
+    </div>
+    <div class="branch-content">
+      <div class="branch-project">
+        <div class="branch-project-name">{{branchModal.project}} <span class="branch-count">{{filteredBranchList.length}}个分支</span></div>
+        <div class="branch-list">
+          <div v-if="filteredBranchList.length" v-for="b in filteredBranchList" :key="b.branch" class="branch-item" :class="{'released-branch':branchModal.releasedSet.has(branchModal.project+'\x00'+(b.branch||'').trim())}" @click="selectBranchFill(b.branch)">
+            <span class="branch-name">{{b.branch}}</span>
+            <span class="branch-date">{{b.date}}</span>
+            <span class="branch-author">{{b.author}}</span>
           </div>
+          <div v-else class="branch-empty">未找到分支</div>
         </div>
       </div>
-      <div class="branch-footer">
-        <button class="btn btn-outline btn-sm" onclick="this.closest('.branch-overlay').remove()" title="关闭弹窗">关闭</button>
-      </div>
     </div>
-  `
-  document.body.appendChild(overlay)
-}
-
-// 点击分支后填充到 input
-function fillBranchToInput(branchName, overlay) {
-  const branchClean = branchName.replace(/\s/g, '')
-  if (overlay && overlay._targetInput) {
-    overlay._targetInput.value = branchClean
-    overlay._targetInput.title = branchClean
-    toast('已填充: ' + branchClean)
-  }
-  overlay.remove()
-}
-
-// 获取所有项目的分支
-async function fetchAllBranches() {
-  const projectsWithPath = projectNames.filter(p => p.localPath)
-  if (projectsWithPath.length === 0) {
-    toast('没有配置本地路径的项目')
-    return
-  }
-
-  // 检查服务器是否运行
-  try {
-    const response = await fetch('http://localhost:' + API_PORT + '/api/git-user')
-    if (!response.ok) throw new Error('服务器未响应')
-  } catch (e) {
-    toast('请先启动服务器: node server.js')
-    return
-  }
-
-  // 获取git用户名
-  let gitUser = null
-  try {
-    const userRes = await fetch('http://localhost:' + API_PORT + '/api/git-user')
-    const userData = await userRes.json()
-    gitUser = userData.user
-  } catch (e) {}
-
-  toast('正在获取分支...')
-
-  // 创建结果弹窗
-  const overlay = document.createElement('div')
-  overlay.className = 'branch-overlay'
-  overlay.innerHTML = `
-    <div class="branch-modal">
-      <div class="branch-header">
-        <h3>分支列表</h3>
-        <input class="header-search" placeholder="搜索分支..." oninput="filterBranchItems(this)" id="branchSearchMulti">
-        <button class="btn-close" onclick="this.closest('.branch-overlay').remove()" title="关闭">×</button>
-      </div>
-      <div class="branch-content" id="branchContent">
-        <div class="branch-loading">正在获取...</div>
-      </div>
-      <div class="branch-footer">
-        <button class="btn btn-outline btn-sm" onclick="this.closest('.branch-overlay').remove()" title="关闭弹窗">关闭</button>
-      </div>
+    <div class="branch-footer">
+      <button class="btn btn-outline btn-sm" @click="branchModal.visible=false">关闭</button>
     </div>
-  `
-  document.body.appendChild(overlay)
+  </div>
+</div>
 
-  const content = overlay.querySelector('#branchContent')
-  let html = ''
-  const releasedSet = getReleasedBranchSet()
-
-  for (const project of projectsWithPath) {
-    try {
-      const url = `http://localhost:${API_PORT}/api/branches?path=${encodeURIComponent(project.localPath)}&user=${encodeURIComponent(gitUser || '')}`
-      const res = await fetch(url)
-      const data = await res.json()
-
-      if (data.error) {
-        html += `<div class="branch-project">
-          <div class="branch-project-name">${escHtml(project.name)}</div>
-          <div class="branch-error">${escHtml(data.error)}</div>
-        </div>`
-      } else if (data.branches && data.branches.length > 0) {
-        branchesCache[project.name] = { branches: data.branches, timestamp: Date.now() }
-        const pName = project.name
-        html += `<div class="branch-project">
-          <div class="branch-project-name">${escHtml(project.name)} <span class="branch-count">${data.branches.length}个分支</span></div>
-          <div class="branch-list">
-            ${data.branches.map(b => {
-              const releasedClass = releasedSet.has(pName + '\x00' + (b.branch || '').trim()) ? ' released-branch' : ''
-              return `<div class="branch-item${releasedClass}" style="cursor:pointer" onclick="copyBranchName('${escAttr(b.branch)}')">
-                <span class="branch-name">${escHtml(b.branch)}</span>
-                <span class="branch-date">${b.date}</span>
-                <span class="branch-author">${escHtml(b.author)}</span>
-              </div>`
-            }).join('')}
+<!-- All branches modal -->
+<div class="branch-overlay" v-if="allBranchesModal.visible" @click.self="allBranchesModal.visible=false">
+  <div class="branch-modal">
+    <div class="branch-header">
+      <h3>分支列表</h3>
+      <input class="header-search" v-model="allBranchesModal.search" placeholder="搜索分支...">
+      <button class="btn-close" @click="allBranchesModal.visible=false">×</button>
+    </div>
+    <div class="branch-content">
+      <div v-if="allBranchesModal.loading" class="branch-loading">正在获取...</div>
+      <template v-else v-for="proj in allBranchesModal.projects" :key="proj.name">
+        <div class="branch-project" v-if="!allBranchesModal.search||proj.branches.some(b=>b.branch.toLowerCase().includes(allBranchesModal.search))">
+          <div class="branch-project-name">{{proj.name}} <span class="branch-count">{{proj.branches.length}}个分支</span></div>
+          <div v-if="proj.error" class="branch-error">{{proj.error}}</div>
+          <div v-else-if="proj.branches.length" class="branch-list">
+            <div v-for="b in proj.branches" :key="b.branch" class="branch-item" :class="{'released-branch':allBranchesModal.releasedSet.has(proj.name+'\x00'+(b.branch||'').trim()),'hidden-by-search':allBranchesModal.search&&!b.branch.toLowerCase().includes(allBranchesModal.search)}" @click="copyText(b.branch)">
+              <span class="branch-name">{{b.branch}}</span>
+              <span class="branch-date">{{b.date}}</span>
+              <span class="branch-author">{{b.author}}</span>
+            </div>
           </div>
-        </div>`
-      } else {
-        html += `<div class="branch-project">
-          <div class="branch-project-name">${escHtml(project.name)}</div>
-          <div class="branch-empty">未找到分支</div>
-        </div>`
-      }
-    } catch (e) {
-      html += `<div class="branch-project">
-        <div class="branch-project-name">${escHtml(project.name)}</div>
-        <div class="branch-error">获取失败: ${escHtml(e.message)}</div>
-      </div>`
-    }
-  }
-
-  saveBranchCache()
-  content.innerHTML = html
-}
-
-function copyBranchName(name) {
-  navigator.clipboard.writeText(name).then(() => {
-    toast('已复制: ' + name)
-  })
-}
-
-// 分支弹窗模糊搜索（单项目弹窗）
-function filterBranchPopup(input) {
-  const overlay = input.closest('.branch-overlay')
-  const branches = overlay._branches || []
-  const projectName = overlay._project ? overlay._project.name : ''
-  const releasedSet = getReleasedBranchSet()
-  const releasedClass = (b) => releasedSet.has(projectName + '\x00' + (b.branch || '').trim()) ? ' released-branch' : ''
-  const keyword = input.value.trim().toLowerCase()
-  const list = document.getElementById('branchPopupList')
-  if (!list) return
-
-  if (!keyword) {
-    list.innerHTML = branches.map(b => `
-      <div class="branch-item${releasedClass(b)}" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
-        <span class="branch-name">${escHtml(b.branch)}</span>
-        <span class="branch-date">${b.date}</span>
-        <span class="branch-author">${escHtml(b.author)}</span>
-      </div>
-    `).join('')
-  } else {
-    const filtered = branches.filter(b => b.branch.toLowerCase().includes(keyword))
-    list.innerHTML = filtered.length > 0
-      ? filtered.map(b => `
-        <div class="branch-item${releasedClass(b)}" style="cursor:pointer" onclick="fillBranchToInput('${escAttr(b.branch)}', this.closest('.branch-overlay'))">
-          <span class="branch-name">${escHtml(b.branch)}</span>
-          <span class="branch-date">${b.date}</span>
-          <span class="branch-author">${escHtml(b.author)}</span>
+          <div v-else-if="!proj.error" class="branch-empty">未找到分支</div>
         </div>
-      `).join('')
-      : '<div class="branch-empty">无匹配分支</div>'
-  }
-}
+      </template>
+    </div>
+    <div class="branch-footer">
+      <button class="btn btn-outline btn-sm" @click="allBranchesModal.visible=false">关闭</button>
+    </div>
+  </div>
+</div>
 
-// 分支列表模糊搜索（多项目弹窗）
-function filterBranchItems(input) {
-  const keyword = input.value.trim().toLowerCase()
-  const content = input.closest('.branch-modal').querySelector('.branch-content')
-  if (!content) return
-  const items = content.querySelectorAll('.branch-item')
-  items.forEach(item => {
-    const nameEl = item.querySelector('.branch-name')
-    const name = nameEl ? nameEl.textContent.toLowerCase() : ''
-    item.classList.toggle('hidden-by-search', !!keyword && !name.includes(keyword))
-  })
-  // 隐藏空的 branch-project
-  content.querySelectorAll('.branch-project').forEach(proj => {
-    const visibleItems = proj.querySelectorAll('.branch-item:not(.hidden-by-search)')
-    proj.style.display = keyword && visibleItems.length === 0 ? 'none' : ''
-  })
-}
+<!-- Context menu -->
+<div v-if="ctxMenu.visible" class="branch-ctx-menu" :style="{left:ctxMenu.x+'px',top:ctxMenu.y+'px'}">
+  <div class="branch-ctx-item" @click="ctxEditNote">{{ctxMenu.item?.notes?'📝 编辑备注':'📝 添加备注'}}</div>
+  <div v-if="ctxMenu.item?.notes" class="branch-ctx-item danger" @click="ctxClearNote">🗑️ 清除备注</div>
+</div>
 
-function selectBranch(projectName, branchName) {
-  // 在所有 pair-row 中查找匹配的项目名，填充分支名
-  branchName = branchName.replace(/\s/g, '') // 去除空格
-  const allBranchInputs = document.querySelectorAll('[data-role="projectBranch"], [data-role="syncBranchName"]')
-  let filled = 0
-  allBranchInputs.forEach(inp => {
-    const row = inp.closest('.pair-row')
-    if (!row) return
-    const role = inp.dataset.role
-    const projRole = role === 'projectBranch' ? 'projectName' : 'syncProjectName'
-    const projInput = row.querySelector(`[data-role="${projRole}"]`)
-    if (projInput && projInput.value.trim() === projectName) {
-      if (!inp.value.trim()) {
-        inp.value = branchName
-        filled++
-      }
-    }
-  })
-  if (filled > 0) {
-    toast(`已填充 ${filled} 个分支字段: ${branchName}`)
-  } else {
-    toast('未找到对应项目或分支名已填写')
-  }
-  // 关闭弹窗
-  const overlay = document.querySelector('.branch-overlay')
-  if (overlay) overlay.remove()
-}
-
-// ============= Note Dialog =============
-let noteTarget = null // { itemId, projIndex, field, btnEl } or null for edit mode
-
-function openNoteDialog(itemId, projIndex, field, editable) {
-  const item = items.find(i => i.id === itemId)
-  if (!item) return
-  const list = field === 'project' ? item.projects : item.syncBranches
-  const entry = list && list[projIndex]
-  const name = field === 'project' ? (entry ? entry.name : '') : (entry ? entry.project : '')
-  const branch = entry ? entry.branch : ''
-  const notes = entry ? (entry.notes || '') : ''
-  const label = name ? (name + (branch ? ' / ' + truncateBranch(branch, 30) : '')) : (branch || '未知')
-  noteTarget = { itemId, projIndex, field }
-  showNoteDialog(label, name, branch, notes, !editable)
-}
-
-// ============= Branch right-click context menu =============
-let branchCtxMenu = null
-
-function showBranchContextMenu(e, itemId, projIndex, field) {
-  e.preventDefault()
-  e.stopPropagation()
-  closeBranchContextMenu()
-  const item = items.find(i => i.id === itemId)
-  if (!item) return
-  const list = field === 'project' ? item.projects : item.syncBranches
-  const entry = list && list[projIndex]
-  if (!entry) return
-  const hasNotes = !!(entry.notes && entry.notes.trim())
-  const menu = document.createElement('div')
-  menu.className = 'branch-ctx-menu'
-  menu.innerHTML =
-    '<div class="branch-ctx-item" data-act="edit">📝 ' + (hasNotes ? '编辑备注' : '添加备注') + '</div>' +
-    (hasNotes ? '<div class="branch-ctx-item danger" data-act="clear">🗑️ 清除备注</div>' : '')
-  document.body.appendChild(menu)
-  branchCtxMenu = menu
-  // 视口内定位
-  const mw = menu.offsetWidth, mh = menu.offsetHeight
-  let x = e.clientX, y = e.clientY
-  if (x + mw > window.innerWidth - 8) x = window.innerWidth - mw - 8
-  if (y + mh > window.innerHeight - 8) y = window.innerHeight - mh - 8
-  menu.style.left = Math.max(8, x) + 'px'
-  menu.style.top = Math.max(8, y) + 'px'
-  menu.querySelector('[data-act="edit"]').onclick = () => {
-    closeBranchContextMenu()
-    openNoteDialog(itemId, projIndex, field, true)
-  }
-  const clearEl = menu.querySelector('[data-act="clear"]')
-  if (clearEl) clearEl.onclick = () => {
-    entry.notes = ''
-    saveToLocalStorage()
-    closeBranchContextMenu()
-    render()
-    toast('备注已清除')
-  }
-}
-
-function closeBranchContextMenu() {
-  if (branchCtxMenu) { branchCtxMenu.remove(); branchCtxMenu = null }
-}
-document.addEventListener('click', closeBranchContextMenu)
-document.addEventListener('scroll', closeBranchContextMenu, true)
-
-function openInlineNoteDialog(btnEl, projName, branchName) {
-  const notes = btnEl.dataset.notes || ''
-  const label = projName ? (projName + (branchName ? ' / ' + truncateBranch(branchName, 30) : '')) : (branchName || '未知')
-  noteTarget = { btnEl }
-  showNoteDialog(label, projName, branchName, notes, false)
-}
-
-function showNoteDialog(label, projName, branchName, notes, readonly) {
-  const textarea = document.getElementById('noteTextarea')
-  const footer = document.querySelector('.note-footer')
-  document.getElementById('noteBranchLabel').textContent = label
-  document.getElementById('noteInfo').innerHTML = '<span style="color:var(--accent)">分支: ' + escHtml(branchName || '-') + '</span> &middot; <span style="color:var(--purple)">项目: ' + escHtml(projName || '-') + '</span>'
-  textarea.value = notes
-  textarea.readOnly = readonly
-  textarea.style.background = readonly ? 'var(--surface)' : ''
-  textarea.style.cursor = readonly ? 'default' : ''
-  footer.innerHTML = readonly
-    ? '<button class="btn btn-outline btn-sm" onclick="closeNoteDialog()" title="关闭">关闭</button>'
-    : '<button class="btn btn-outline btn-sm" onclick="closeNoteDialog()" title="取消">取消</button><button class="btn btn-purple btn-sm" onclick="saveNote()" title="保存备注">保存</button>'
-  document.getElementById('noteOverlay').style.display = 'flex'
-  if (!readonly) setTimeout(() => textarea.focus(), 100)
-}
-
-function closeNoteDialog() {
-  document.getElementById('noteOverlay').style.display = 'none'
-  noteTarget = null
-}
-
-function saveNote() {
-  if (!noteTarget) return
-  const notes = document.getElementById('noteTextarea').value.trim()
-  const isEditMode = !!noteTarget.btnEl
-  if (isEditMode) {
-    // Edit mode: save to btnEl's data-notes
-    noteTarget.btnEl.dataset.notes = notes
-    noteTarget.btnEl.classList.toggle('has-notes', !!notes)
-    noteTarget.btnEl.title = notes ? '编辑备注' : '添加备注'
-  } else {
-    // Display mode: save to items data
-    const item = items.find(i => i.id === noteTarget.itemId)
-    if (item) {
-      const list = noteTarget.field === 'project' ? item.projects : item.syncBranches
-      if (list && list[noteTarget.projIndex]) {
-        list[noteTarget.projIndex].notes = notes
-      }
-    }
-    saveToLocalStorage()
-  }
-  closeNoteDialog()
-  if (!isEditMode) render()
-  toast(notes ? '备注已保存' : '备注已清除')
-}
-
-// Start
-init()
-checkDailyReminder()
-</script>
+<!-- Project dropdown -->
+<div v-if="projDropdown.visible" class="project-dropdown" :style="{left:projDropdown.x+'px',top:projDropdown.y+'px',width:projDropdown.w+'px'}">
+  <div v-if="projDropdown.filtered.length" v-for="item in projDropdown.filtered" :key="item.name" class="project-dropdown-item" :class="{selected:item.selected}" @click="selectProjDropdown(item)">{{item.name}}</div>
+  <div v-else class="project-dropdown-item" style="color:var(--text-muted)">无匹配项目</div>
+</div>
+</div>
+</div>
+<script src="./vue.global.js"></script>
+<script src="./todo-release.js"></script>
 </body>
 </html>
